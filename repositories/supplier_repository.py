@@ -1,6 +1,6 @@
 # file: repositories/supplier_repository.py
 from .base_repository import BaseRepository
-import pyodbc
+# import pyodbc
 
 
 class SupplierRepository(BaseRepository):

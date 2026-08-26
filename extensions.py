@@ -2,7 +2,7 @@
 Database connection pool and helper utilities
 """
 
-import pyodbc
+# import pyodbc
 from flask import current_app, g
 from config import Config
 

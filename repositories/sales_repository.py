@@ -1,6 +1,6 @@
 # file: repositories/sales_repository.py
 from .base_repository import BaseRepository
-import pyodbc
+# import pyodbc
 
 class SalesRepository(BaseRepository):
     POINTS_REQUIRED = 5

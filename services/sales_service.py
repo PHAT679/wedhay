@@ -2,7 +2,7 @@
 from repositories.sales_repository import SalesRepository
 from flask import session
 from .base_service import BaseService
-import pyodbc
+# import pyodbc
 
 class SalesService(BaseService):
     POINTS_REQUIRED = 5
