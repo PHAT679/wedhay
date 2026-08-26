@@ -1,5 +1,5 @@
 # file: repositories/base_repository.py
-import pyodbc
+#import pyodbc
 from database import get_db
 
 
