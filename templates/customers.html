@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Khách hàng - Sáu Bảnh{% endblock %}
+{% block page_title %}<i class="bi bi-people me-2"></i>Khách hàng{% endblock %}
+
+{% block content %}
+<div class="page-actions mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div class="search-box" style="max-width:320px">
+        <i class="bi bi-search search-box-icon"></i>
+        <input type="text" id="customerSearch" class="form-control" placeholder="Tìm theo tên, số điện thoại..." oninput="filterCustomers()">
+    </div>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+        <i class="bi bi-person-plus-fill me-1"></i> Thêm khách hàng
+    </button>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+            <i class="bi bi-people me-2 text-primary"></i>
+            <strong>Danh sách khách hàng</strong>
+        </div>
+        <span class="badge bg-primary" id="customerCount">{{ customers|length }} khách</span>
+    </div>
+    <div class="card-body p-0">
+        {% if customers %}
+        <div class="table-responsive">
+            <table class="table table-hover data-table mb-0" id="customersTable">
+                <thead>
+                    <tr>
+                        <th>Mã KH</th>
+                        <th>Tên khách hàng</th>
+                        <th>Số điện thoại</th>
+                        <th>Địa chỉ</th>
+                        <th class="text-center">Điểm tích lũy</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="customersBody">
+                    {% for kh in customers %}
+                    <tr>
+                        <td><code class="maspct-code">{{ kh.MAKHACHHANG or kh.MAKH or 'N/A' }}</code></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="customer-avatar">
+                                    {{ (kh.TENKHACHHANG or kh.TENKH or 'K')[0].upper() }}
+                                </div>
+                                <strong>{{ kh.TENKHACHHANG or kh.TENKH or 'N/A' }}</strong>
+                            </div>
+                        </td>
+                        <td>{{ kh.DIENTHOAI or kh.SDT or '—' }}</td>
+                        <td>
+                            <span class="text-muted">{{ kh.DIACHI or '—' }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-success">{{ kh.TONG_DIEM or 0 }}</span>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-primary" 
+                                    onclick="prefillInvoice('{{ kh.MAKHACHHANG or kh.MAKH }}')" 
+                                    title="Tạo hóa đơn cho khách này">
+                                <i class="bi bi-cart-plus"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    onclick="showPointHistory('{{ kh.MAKHACHHANG or kh.MAKH }}')"
+                                    title="Xem lịch sử điểm">
+                                <i class="bi bi-clock-history"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-people"></i>
+            <h5>Chưa có khách hàng nào</h5>
+            <p class="text-muted">Thêm khách hàng đầu tiên vào hệ thống</p>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCustomerModal">
+                <i class="bi bi-person-plus-fill me-1"></i> Thêm khách hàng
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div class="modal fade" id="addCustomerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-plus-fill me-2 text-primary"></i>
+                    Thêm khách hàng mới
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('customers.add_customer') }}" id="addCustomerForm" onsubmit="return validateCustomer()">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Mã khách hàng</label>
+                        {% if next_customer_id %}
+                        <input type="text" class="form-control fw-bold text-primary" name="makh" value="{{ next_customer_id }}" readonly>
+                        <small class="text-muted">Mã tự động từ hệ thống</small>
+                        {% else %}
+                        <input type="text" class="form-control bg-danger-subtle text-danger" value="Không thể sinh mã" readonly>
+                        <small class="text-danger">Kiểm tra procedure usp_SINH_MA_KHACHHANG</small>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tên khách hàng <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            <input type="text" class="form-control" name="tenkh" id="tenkhNew" placeholder="Họ và tên" required>
+                        </div>
+                        <div class="invalid-feedback" id="tenkhError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số điện thoại</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                            <input type="text" class="form-control" name="dienthoai" id="dienthoaiNew" 
+                                   placeholder="0xxxxxxxxx" maxlength="10" pattern="0[0-9]{9}">
+                        </div>
+                        <div class="form-text">10 số, bắt đầu bằng 0</div>
+                        <div class="invalid-feedback" id="dienthoaiError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Địa chỉ</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                            <input type="text" class="form-control" name="diachi" placeholder="Địa chỉ (tùy chọn)">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-person-plus-fill me-1"></i> Thêm khách hàng
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterCustomers() {
+    const q = document.getElementById('customerSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#customersBody tr');
+    let visible = 0;
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const show = text.includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('customerCount').textContent = visible + ' khách';
+}
+
+function validateCustomer() {
+    const tenkh = document.getElementById('tenkhNew').value.trim();
+    const sdt = document.getElementById('dienthoaiNew').value.trim();
+    
+    if (!tenkh) {
+        document.getElementById('tenkhNew').classList.add('is-invalid');
+        document.getElementById('tenkhError').textContent = 'Tên khách hàng không được để trống';
+        return false;
+    }
+    
+    if (sdt && !/^0\d{9}$/.test(sdt)) {
+        document.getElementById('dienthoaiNew').classList.add('is-invalid');
+        document.getElementById('dienthoaiError').textContent = 'Số điện thoại phải gồm 10 số và bắt đầu bằng 0';
+        return false;
+    }
+    
+    return true;
+}
+
+function generateCustomerCode() {
+    const ts = Date.now().toString().slice(-5);
+    document.getElementById('makhNew').value = 'KH' + ts;
+}
+
+function prefillInvoice(makh) {
+    sessionStorage.setItem('prefill_makh', makh);
+    window.location.href = "{{ url_for('sales.index') }}";
+}
+
+async function showPointHistory(makh) {
+    try {
+        const res = await fetch(`/customers/points-history/${encodeURIComponent(makh)}`);
+        const json = await res.json();
+        if (!json.success) {
+            alert(json.message || 'Không thể lấy lịch sử điểm.');
+            return;
+        }
+        if (!json.data || json.data.length === 0) {
+            alert('Khách hàng chưa có lịch sử điểm.');
+            return;
+        }
+        const text = json.data.slice(0, 15).map(x => `${x.ID} | ${x.MAHDB} | ${x.DIEM_THAYDOI} | ${x.LOAI_DIEM}`).join('\n');
+        alert(`Lịch sử điểm (${makh}):\n` + text);
+    } catch (e) {
+        alert('Không thể lấy lịch sử điểm.');
+    }
+}
+</script>
+{% endblock %}

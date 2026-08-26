@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Nhập hàng - Sáu Bảnh{% endblock %}
+{% block page_title %}<i class="bi bi-truck me-2"></i>Nhập hàng{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/purchase.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="purchase-layout">
+    <!-- CỘT TRÁI -->
+    <div class="purchase-left">
+
+        <!-- Card 1: Thông tin phiếu nhập -->
+        <div class="purchase-card">
+            <div class="purchase-card-header">
+                <h6 class="purchase-card-title"><i class="bi bi-file-earmark-text text-primary"></i>Thông tin phiếu nhập
+                </h6>
+                {% if current_purchase_invoice_id %}
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill"><i
+                        class="bi bi-check-circle-fill me-1"></i>Đang xử lý</span>
+                {% endif %}
+            </div>
+            <div class="purchase-card-body">
+                <div class="mb-3 d-flex align-items-center">
+                    <span class="text-muted small me-2">Mã phiếu nhập:</span>
+                    <strong class="text-primary fs-5">{{ current_purchase_invoice_id or next_purchase_invoice_id
+                        }}</strong>
+                </div>
+
+                <form method="POST" action="{{ url_for('purchase.create_purchase') }}">
+                    <input type="hidden" name="MAHDN"
+                        value="{{ current_purchase_invoice_id or next_purchase_invoice_id }}">
+                    <div class="info-grid">
+                        <div class="info-group">
+                            <label>Mã NCC / Nhà cung cấp</label>
+                            <select name="MA_NCC" required {% if current_purchase_invoice_id %}disabled{% endif %}>
+                                <option value="">Chọn nhà cung cấp</option>
+                                {% for s in suppliers|default([]) %}
+                                <option value="{{ s.MA_NCC }}" {% if current_purchase and
+                                    current_purchase.ma_ncc==s.MA_NCC %}selected{% endif %}>{{ s.MA_NCC }} - {{ s.TENNCC
+                                    }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="info-group">
+                            <label>Chiết khấu (%)</label>
+                            <input type="number" id="purchaseDiscountInput" name="chietkhau"
+                                value="{{ purchase_summary.chietkhau_percent|default(0) }}" min="0" max="100"
+                                step="0.01" {% if not current_purchase_invoice_id %}disabled{% endif %}>
+                            <input type="hidden" id="currentPurchaseInvoiceId"
+                                value="{{ current_purchase_invoice_id or '' }}">
+                        </div>
+                        <div class="info-group">
+                            <label>Nhân viên</label>
+                            <input type="text" name="MANV" value="{{ session.get('user', {}).get('manv', '') }}"
+                                readonly>
+                        </div>
+                    </div>
+
+                    {% if current_purchase_invoice_id %}
+                    <button type="button" class="btn-create" style="background-color: #94a3b8; cursor: not-allowed;"
+                        disabled>Đã tạo phiếu nhập</button>
+                    {% else %}
+                    <button type="submit" class="btn-create"><i class="bi bi-file-earmark-plus me-1"></i>Tạo phiếu
+                        nhập</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <!-- Card 2: Thêm sản phẩm -->
+        <div class="purchase-card" style="position: relative;">
+            {% if not current_purchase_invoice_id %}
+            <div class="mask-overlay">
+                <div class="mask-overlay-content"><i class="bi bi-exclamation-triangle-fill me-2"></i>Vui lòng tạo phiếu
+                    nhập trước</div>
+            </div>
+            {% endif %}
+
+            <div class="purchase-card-header">
+                <h6 class="purchase-card-title"><i class="bi bi-box-seam text-success"></i>Thêm sản phẩm vào phiếu nhập
+                </h6>
+            </div>
+            <div class="purchase-card-body">
+                <form method="POST" action="{{ url_for('purchase.add_item') }}"
+                    onsubmit="return validatePurchaseItem()">
+                    <input type="hidden" name="MAHDN" value="{{ current_purchase_invoice_id }}">
+                    <div class="add-grid">
+                        <div class="info-group mb-0">
+                            <label>Mã sản phẩm chi tiết</label>
+                            <input type="text" name="MASPCT" id="MASPCT" placeholder="Nhập hoặc tìm kiếm sản phẩm..."
+                                required {% if not current_purchase_invoice_id %}disabled{% endif %}>
+                        </div>
+                        <div class="info-group mb-0">
+                            <label>Số lượng</label>
+                            <div class="quantity-control">
+                                <button type="button" class="qty-btn" id="qtyMinus" {% if not
+                                    current_purchase_invoice_id %}disabled{% endif %}>-</button>
+                                <input type="number" name="SOLUONG_NHAP" id="SOLUONG_NHAP" value="1" min="1" step="1"
+                                    class="qty-input" {% if not current_purchase_invoice_id %}disabled{% endif %}>
+                                <button type="button" class="qty-btn" id="qtyPlus" {% if not current_purchase_invoice_id
+                                    %}disabled{% endif %}>+</button>
+                            </div>
+                        </div>
+                        <div class="info-group mb-0">
+                            <button type="submit" class="btn-add" {% if not current_purchase_invoice_id %}disabled{%
+                                endif %}><i class="bi bi-plus-circle me-1"></i>Thêm vào phiếu</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Card 3: Chi tiết phiếu nhập -->
+        <div class="purchase-card flex-grow-1 d-flex flex-column">
+            <div class="purchase-card-header">
+                <h6 class="purchase-card-title"><i class="bi bi-list-task text-info"></i>Chi tiết phiếu nhập</h6>
+            </div>
+            <div class="purchase-card-body p-0 overflow-auto" style="flex: 1; max-height: 400px;">
+                {% if purchase_items %}
+                <table class="table table-details w-100 mb-0">
+                    <thead class="sticky-top">
+                        <tr>
+                            <th class="text-center" width="5%">STT</th>
+                            <th width="45%">Sản phẩm</th>
+                            <th class="text-center" width="10%">SL</th>
+                            <th class="text-end" width="20%">Đơn giá nhập</th>
+                            <th class="text-end" width="15%">Thành tiền</th>
+                            <th class="text-center" width="5%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in purchase_items %}
+                        <tr>
+                            <td class="text-center text-muted fw-semibold">{{ loop.index }}</td>
+                            <td>
+                                <div class="product-cell">
+                                    <div class="product-img-placeholder">
+                                        {% if 'gấu' in item.TENSP|lower %}<i class="bi bi-emoji-sunglasses"></i>
+                                        {% elif 'khủng long' in item.TENSP|lower %}<i class="bi bi-emoji-smile"></i>
+                                        {% elif 'siêu nhân' in item.TENSP|lower %}<i class="bi bi-lightning-charge"></i>
+                                        {% elif 'hoa' in item.TENSP|lower %}<i class="bi bi-flower1"></i>
+                                        {% elif 'xe' in item.TENSP|lower %}<i class="bi bi-car-front"></i>
+                                        {% else %}<i class="bi bi-image"></i>{% endif %}
+                                    </div>
+                                    <div class="product-info-cell">
+                                        <span class="product-name">{{ item.TENSP }}</span>
+                                        <span class="product-meta">{{ item.MASPCT }} | {{ item.MAU }} / {{ item.SIZE
+                                            }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center fw-bold">{{ item.SOLUONG_NHAP }}</td>
+                            <td class="text-end text-muted">{{ "{:,.0f}".format(item.DONGIA_NHAP) }}</td>
+                            <td class="text-end fw-bold text-primary">{{ "{:,.0f}".format(item.THANH_TIEN) }}</td>
+                            <td class="text-center">
+                                <button type="button" class="btn-delete-row" title="Xóa"
+                                    onclick="alert('Chức năng đang được cập nhật!')"><i
+                                        class="bi bi-trash"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-1 d-block mb-2 text-light"></i>
+                    Chưa có sản phẩm nào trong phiếu nhập.
+                </div>
+                {% endif %}
+            </div>
+            {% if purchase_items %}
+            <div class="p-3 border-top bg-light text-end">
+                <span class="text-muted me-3 fw-bold">Tổng cộng</span>
+                <span class="fs-4 fw-bold text-primary">{{ "{:,.0f}".format(purchase_summary.tong_tien_hang|default(0))
+                    }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer Summary -->
+        <div class="summary-row mt-auto">
+            <div class="summary-box">
+                <div class="icon"><i class="bi bi-box-seam"></i></div>
+                <div class="label">Tổng số lượng</div>
+                <div class="value" id="summaryTongSoLuong">{{ purchase_summary.tong_so_luong }}</div>
+            </div>
+            <div class="summary-box">
+                <div class="icon"><i class="bi bi-percent"></i></div>
+                <div class="label">Chiết khấu (%)</div>
+                <div class="value" id="summaryChietKhauPercent">{{ purchase_summary.chietkhau_percent|default(0.0) }}%</div>
+            </div>
+            <div class="summary-box">
+                <div class="icon"><i class="bi bi-cash-stack"></i></div>
+                <div class="label">Tiền giảm chiết khấu</div>
+                <div class="value" id="summaryTienChietKhau">{{ "{:,.0f}".format(purchase_summary.tien_chiet_khau|default(0)) }}đ</div>
+            </div>
+            <div class="summary-box">
+                <div class="icon"><i class="bi bi-receipt"></i></div>
+                <div class="label">Cần thanh toán</div>
+                <div class="value" id="summaryCanThanhToan">{{ "{:,.0f}".format(purchase_summary.can_thanh_toan|default(0)) }}đ</div>
+            </div>
+        </div>
+
+        {% if current_purchase %}
+        <div class="mt-3 mb-2">
+            <form method="POST" action="{{ url_for('purchase.complete_purchase') }}">
+                <input type="hidden" name="MAHDN" value="{{ current_purchase.MAHDN or current_purchase.mahdn }}">
+                <button type="submit" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm rounded-3"
+                    style="letter-spacing: 0.5px; text-transform: uppercase;">
+                    <i class="bi bi-check-circle-fill me-2"></i> Hoàn thành phiếu nhập
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- CỘT PHẢI -->
+    <div class="purchase-right">
+        <div class="search-section">
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" id="purchaseSearch" placeholder="Tìm sản phẩm theo tên, mã, màu, size...">
+            </div>
+            <div class="filter-tabs">
+                <button type="button" class="filter-tab active" data-filter="all"
+                    onclick="filterPurchaseProducts(this, 'all')">Tất cả</button>
+                <button type="button" class="filter-tab" data-filter="available"
+                    onclick="filterPurchaseProducts(this, 'available')">Còn hàng</button>
+                <button type="button" class="filter-tab" data-filter="low"
+                    onclick="filterPurchaseProducts(this, 'low')">Sắp hết</button>
+                <button type="button" class="filter-tab" data-filter="out"
+                    onclick="filterPurchaseProducts(this, 'out')">Hết hàng</button>
+            </div>
+        </div>
+
+        <div class="product-list-container" id="purchaseProductBody">
+            {% for p in products|default([]) %}
+            {% set is_out = p.TONKHO <= 0 %} {% set is_low=p.TONKHO> 0 and p.TONKHO <= 10 %} {% set status='out' if
+                    is_out else ('low' if is_low else 'available' ) %} <div
+                    class="purchase-product-item purchase-product-row" data-status="{{ status }}">
+                    <div class="purchase-product-info">
+                        <div class="purchase-product-name" title="{{ p.TENSP }}">{{ p.TENSP }}</div>
+                        <div class="purchase-product-code">{{ p.MASPCT }}</div>
+                        <div class="purchase-product-meta">{{ p.MAU }} / {{ p.SIZE }}</div>
+                        <div
+                            class="badge-stock mt-1 {% if is_out %}danger{% elif is_low %}warning{% else %}success{% endif %}">
+                            Tồn kho: {{ p.TONKHO }}
+                        </div>
+                    </div>
+                    <div class="purchase-product-price">{{ "{:,.0f}".format(p.DONGIA_NHAP) }}đ</div>
+                    <button type="button" class="btn-select-product btn btn-primary border-0"
+                        data-maspct="{{ p.MASPCT }}" data-stock="{{ p.TONKHO }}"
+                        onclick="selectPurchaseProduct('{{ p.MASPCT }}', {{ p.TONKHO|default(0) }})">Chọn</button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/purchase.js') }}"></script>
+{% endblock %}

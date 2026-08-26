@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Báo cáo - Sáu Bảnh{% endblock %}
+{% block page_title %}<i class="bi bi-bar-chart-line me-2"></i>Báo cáo & Thống kê{% endblock %}
+
+{% block content %}
+<!-- Revenue Chart -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-8">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="bi bi-bar-chart-line me-2 text-primary"></i>
+                    <strong>Doanh thu theo tháng</strong>
+                </div>
+                <span class="badge bg-primary">{{ monthly_revenue|length }} tháng</span>
+            </div>
+            <div class="card-body">
+                {% if monthly_revenue and monthly_revenue|length > 0 %}
+                <canvas id="revenueChart" height="180"></canvas>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-bar-chart"></i><p>Chưa có dữ liệu doanh thu</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-pie-chart me-2 text-teal"></i>
+                <strong>Top khách hàng mua nhiều</strong>
+            </div>
+            <div class="card-body p-0">
+                {% if top_customers and top_customers|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>Khách hàng</th><th class="text-center">Số HĐ</th><th class="text-end">Tổng mua</th></tr></thead>
+                        <tbody>
+                            {% for kh in top_customers %}
+                            <tr>
+                                <td>
+                                    <div class="customer-avatar d-inline-flex me-2">{{ (kh.TENKH or 'K')[0].upper() }}</div>
+                                    {{ kh.TENKH or kh.MAKH or 'N/A' }}
+                                </td>
+                                <td class="text-center">{{ kh.SO_HOA_DON or kh.SOHOADON or '—' }}</td>
+                                <td class="text-end fw-bold text-primary">{{ "{:,.0f}".format(kh.TONG_CHI_TIEU or 0) }}đ</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-people"></i><p>Chưa có dữ liệu</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Products + Staff Sales -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-trophy me-2 text-warning"></i>
+                <strong>Top sản phẩm bán chạy</strong>
+            </div>
+            <div class="card-body p-0">
+                {% if top_products and top_products|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>#</th><th>Sản phẩm</th><th class="text-end">SL bán</th><th class="text-end">Doanh thu</th></tr></thead>
+                        <tbody>
+                            {% for sp in top_products %}
+                            <tr>
+                                <td>
+                                    {% if loop.index <= 3 %}
+                                    <span class="rank-badge rank-{{ loop.index }}">{{ loop.index }}</span>
+                                    {% else %}{{ loop.index }}{% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ sp.TENSP or 'N/A' }}</strong><br>
+                                    <code class="small text-muted">{{ sp.MASPCT or sp.MASP or '' }}</code>
+                                </td>
+                                <td class="text-end fw-bold text-primary">{{ "{:,}".format(sp.TONG_BAN or sp.SOLUONG_BAN or 0) }}</td>
+                                <td class="text-end">{{ "{:,.0f}".format(sp.DOANH_THU or sp.DOANHTHU or 0) }}đ</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-trophy"></i><p>Chưa có dữ liệu</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-person-check me-2 text-success"></i>
+                <strong>Doanh số nhân viên</strong>
+            </div>
+            <div class="card-body p-0">
+                {% if employee_sales and employee_sales|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>Nhân viên</th><th class="text-end">Doanh thu</th><th class="text-center">Số HĐ</th></tr></thead>
+                        <tbody>
+                            {% for nv in employee_sales %}
+                            <tr>
+                                <td>
+                                    <strong>{{ nv.TEN_NV or nv.MANV or 'N/A' }}</strong>
+                                    {% if nv.MANV %}<br><small class="text-muted">{{ nv.MANV }}</small>{% endif %}
+                                </td>
+                                <td class="text-end fw-bold text-success">{{ "{:,.0f}".format(nv.DOANH_SO or 0) }}đ</td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary">{{ nv.SO_HOA_DON or nv.SOHOADON or '—' }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-person-check"></i><p>Chưa có dữ liệu nhân viên</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Debt + Slow Moving -->
+<div class="row g-4">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-wallet2 me-2 text-danger"></i>
+                <strong>Công nợ nhà cung cấp</strong>
+            </div>
+            <div class="card-body p-0">
+                {% if supplier_debts and supplier_debts|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>Nhà cung cấp</th><th class="text-end">Tổng nợ</th><th class="text-end">Đã trả</th><th class="text-end">Còn nợ</th><th class="text-center">Trạng thái</th></tr></thead>
+                        <tbody>
+                            {% for cn in supplier_debts %}
+                            <tr>
+                                <td>{{ cn.TENNCC or cn.MA_NCC or 'N/A' }}</td>
+                                <td class="text-end">{{ "{:,.0f}".format(cn.TONG_NO or 0) }}đ</td>
+                                <td class="text-end">{{ "{:,.0f}".format(cn.DA_TRA or 0) }}đ</td>
+                                <td class="text-end fw-bold text-danger">{{ "{:,.0f}".format(cn.CONG_NO or 0) }}đ</td>
+                                <td class="text-center">{{ cn.TRANG_THAI or ('Còn nợ' if (cn.CONG_NO or 0) > 0 else 'Đã thanh toán') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-check-circle text-success"></i><p class="text-success">Không có công nợ tồn đọng</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-hourglass-split me-2 text-warning"></i>
+                <strong>Hàng tồn lâu cần xử lý</strong>
+            </div>
+            <div class="card-body p-0">
+                {% if old_inventory and old_inventory|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>Sản phẩm</th><th class="text-center">Tồn kho</th><th>Số ngày tồn</th></tr></thead>
+                        <tbody>
+                            {% for sp in old_inventory %}
+                            <tr>
+                                <td>
+                                    <strong>{{ sp.TENSP or 'N/A' }}</strong><br>
+                                    <code class="small">{{ sp.MASPCT or sp.MASP or '' }}</code>
+                                </td>
+                                <td class="text-center"><span class="badge bg-secondary">{{ sp.SL_TONKHO or sp.TONKHO or 0 }}</span></td>
+                                <td><small class="text-danger">{{ sp.SO_NGAY_TON or '—' }}</small></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-clock-history"></i><p>Không có hàng tồn lâu</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Low Stock -->
+<div class="row g-4 mt-1">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-exclamation-triangle me-2 text-danger"></i>
+                <strong>Sản phẩm sắp hết</strong>
+            </div>
+            <div class="card-body p-0">
+                {% if low_stock_products and low_stock_products|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>Mã SPCT</th><th>Tên sản phẩm</th><th>Màu</th><th>Size</th><th class="text-center">Số lượng tồn</th></tr></thead>
+                        <tbody>
+                            {% for item in low_stock_products %}
+                            <tr>
+                                <td><code>{{ item.MASPCT or '' }}</code></td>
+                                <td>{{ item.TENSP or 'N/A' }}</td>
+                                <td>{{ item.TEN_MAU or '—' }}</td>
+                                <td>{{ item.TEN_SIZE or '—' }}</td>
+                                <td class="text-center fw-bold text-danger">{{ item.SL_TONKHO or 0 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-box-seam"></i><p>Chưa có dữ liệu</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if monthly_revenue and monthly_revenue|length > 0 %}
+<script>
+const labels = {{ monthly_revenue | map(attribute='THANG') | list | tojson }};
+const data = {{ monthly_revenue | map(attribute='DOANH_THU') | list | tojson }};
+const ctx = document.getElementById('revenueChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels.map(m => 'Tháng ' + m),
+        datasets: [{
+            label: 'Doanh thu',
+            data: data,
+            borderColor: 'rgba(37,99,235,1)',
+            backgroundColor: 'rgba(37,99,235,0.1)',
+            borderWidth: 2.5,
+            pointBackgroundColor: 'rgba(37,99,235,1)',
+            pointRadius: 4,
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => new Intl.NumberFormat('vi-VN',{style:'currency',currency:'VND'}).format(ctx.raw)
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { callback: v => new Intl.NumberFormat('vi-VN',{notation:'compact'}).format(v) + ' đ' },
+                grid: { color: 'rgba(0,0,0,0.04)' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

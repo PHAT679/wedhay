@@ -1,0 +1,317 @@
+{% extends "base.html" %}
+
+{% block title %}Tổng quan - Sáu Bảnh{% endblock %}
+{% block page_title %}<i class="bi bi-grid-1x2-fill me-2"></i>Tổng quan{% endblock %}
+
+{% block content %}
+<!-- KPI Cards Row -->
+<div class="row g-4 mb-4">
+
+    <!-- Doanh thu tháng -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card kpi-blue">
+            <div class="kpi-icon">
+                <i class="bi bi-currency-dollar"></i>
+            </div>
+            <div class="kpi-body">
+                <div class="kpi-label">Doanh thu tháng này</div>
+                <div class="kpi-value">
+                    {{ "{:,.0f}".format(doanh_thu_thang|default(0) or 0) }} đ
+                </div>
+                <div class="kpi-sub">
+                    <i class="bi bi-calendar3"></i>
+                    Tháng {{ now.month if now is defined else '' }}/{{ now.year if now is defined else '' }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tổng sản phẩm -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card kpi-teal">
+            <div class="kpi-icon">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="kpi-body">
+                <div class="kpi-label">Sản phẩm trong kho</div>
+                <div class="kpi-value">{{ tong_sp|default(0) }}</div>
+                <div class="kpi-sub">
+                    <i class="bi bi-layers"></i> SKU đang quản lý
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sắp hết -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card kpi-orange">
+            <div class="kpi-icon">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div class="kpi-body">
+                <div class="kpi-label">Sản phẩm sắp hết</div>
+                <div class="kpi-value">{{ so_sap_het|default(0) }}</div>
+                <div class="kpi-sub">
+                    <i class="bi bi-arrow-right-circle"></i>
+                    {% if so_sap_het|default(0) > 0 %}
+                    <a href="{{ url_for('stock.index') }}" class="text-warning">Xem chi tiết</a>
+                    {% else %}
+                    Tồn kho ổn định
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hàng tồn lâu -->
+    <div class="col-xl-3 col-md-6">
+        <div class="kpi-card kpi-red">
+            <div class="kpi-icon">
+                <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div class="kpi-body">
+                <div class="kpi-label">Hàng tồn lâu</div>
+                <div class="kpi-value">{{ so_ton_lau|default(0) }}</div>
+                <div class="kpi-sub">
+                    <i class="bi bi-clock-history"></i>
+                    Cần xem xét xử lý
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart + Top Products Row -->
+<div class="row g-4 mb-4">
+    <!-- Revenue Chart -->
+    <div class="col-xl-7">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="bi bi-bar-chart-line me-2 text-primary"></i>
+                    <strong>Doanh thu theo tháng</strong>
+                </div>
+                <span class="badge bg-primary-soft text-primary">{{ revenue_labels|length }} tháng</span>
+            </div>
+            <div class="card-body">
+                {% if revenue_labels %}
+                <canvas id="revenueChart" height="220"></canvas>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <p>Chưa có dữ liệu doanh thu</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="col-xl-5">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="bi bi-trophy me-2 text-warning"></i>
+                <strong>Top sản phẩm bán chạy</strong>
+            </div>
+            <div class="card-body p-0">
+                {% if top_sp %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Sản phẩm</th>
+                                <th class="text-end">SL bán</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sp in top_sp|default([]) %}
+                            <tr>
+                                <td>
+                                    {% if loop.index <= 3 %}
+                                    <span class="rank-badge rank-{{ loop.index }}">{{ loop.index }}</span>
+                                    {% else %}
+                                    <span class="text-muted">{{ loop.index }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="fw-600">{{ sp.TENSANPHAM or sp.get('TENSANPHAM', 'N/A') }}</div>
+                                    <small class="text-muted">{{ sp.MASPCT or '' }}</small>
+                                </td>
+                                <td class="text-end">
+                                    <strong class="text-primary">{{ "{:,}".format(sp.SOLUONG_BAN or sp.get('SOLUONG', 0)) }}</strong>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-trophy"></i>
+                    <p>Chưa có dữ liệu</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Low Stock + Slow Moving Row -->
+<div class="row g-4">
+    <!-- Low Stock -->
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="bi bi-exclamation-triangle me-2 text-warning"></i>
+                    <strong>Sản phẩm sắp hết hàng</strong>
+                </div>
+                {% if sap_het %}
+                <span class="badge bg-warning text-dark">{{ sap_het|length }} sản phẩm</span>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                {% if sap_het %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Màu / Size</th>
+                                <th class="text-center">Tồn kho</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sp in sap_het[:8] %}
+                            <tr>
+                                <td>
+                                    <div class="fw-600">{{ sp.TENSANPHAM or 'N/A' }}</div>
+                                    <small class="text-muted">{{ sp.MASPCT or '' }}</small>
+                                </td>
+                                <td>
+                                    <span class="text-muted">{{ sp.MAU or '' }}</span>
+                                    {% if sp.SIZE or sp.COKISIZE %}
+                                    / <span class="text-muted">{{ sp.SIZE or sp.COKISIZE }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-warning text-dark">{{ sp.SOLUONG or sp.TONKHO or 0 }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-check-circle text-success"></i>
+                    <p class="text-success">Tất cả sản phẩm còn đủ hàng</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Slow Moving -->
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="bi bi-hourglass-split me-2 text-danger"></i>
+                    <strong>Hàng tồn kho lâu</strong>
+                </div>
+                {% if ton_lau %}
+                <span class="badge bg-danger">{{ ton_lau|length }} sản phẩm</span>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                {% if ton_lau %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th class="text-center">Tồn kho</th>
+                                <th>Ngày nhập</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sp in ton_lau %}
+                            <tr>
+                                <td>
+                                    <div class="fw-600">{{ sp.TENSANPHAM or 'N/A' }}</div>
+                                    <small class="text-muted">{{ sp.MASPCT or '' }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">{{ sp.SOLUONG or sp.TONKHO or 0 }}</span>
+                                </td>
+                                <td>
+                                    <small class="text-danger">
+                                        {{ sp.NGAYNHAP.strftime('%d/%m/%Y') if sp.NGAYNHAP else (sp.NGAY_NHAP.strftime('%d/%m/%Y') if sp.NGAY_NHAP else 'N/A') }}
+                                    </small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-clock-history text-muted"></i>
+                    <p>Không có hàng tồn lâu</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if revenue_labels %}
+<script>
+// Revenue chart data from Jinja2
+const revenueLabels = {{ revenue_labels|default([])|tojson }};
+const revenueData = {{ revenue_data|default([])|tojson }};
+
+const ctx = document.getElementById('revenueChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: revenueLabels.map(m => 'Tháng ' + m),
+        datasets: [{
+            label: 'Doanh thu (đ)',
+            data: revenueData,
+            backgroundColor: 'rgba(37, 99, 235, 0.15)',
+            borderColor: 'rgba(37, 99, 235, 1)',
+            borderWidth: 2,
+            borderRadius: 6,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => new Intl.NumberFormat('vi-VN', {style:'currency', currency:'VND'}).format(ctx.raw)
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: val => new Intl.NumberFormat('vi-VN', {notation:'compact'}).format(val) + ' đ'
+                },
+                grid: { color: 'rgba(0,0,0,0.05)' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

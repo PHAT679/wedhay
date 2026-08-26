@@ -1,0 +1,181 @@
+{% extends "auth_base.html" %}
+
+{% block title %}Đăng nhập - Sáu Bảnh{% endblock %}
+
+{% block content %}
+<div class="sb-login-page">
+
+    <!-- ── DECORATIONS ── -->
+    <span class="sb-star sb-star-1">★</span>
+    <span class="sb-star sb-star-2">★</span>
+    <span class="sb-star sb-star-3">✦</span>
+
+    <div class="sb-login-shell">
+
+        <!-- ══ LEFT: BRAND PANEL ══════════════════════════════════════ -->
+        <section class="sb-brand-panel">
+
+            <!-- Clothesline decoration -->
+            <div class="sb-clothesline">
+                <span class="sb-cloth sb-cloth-bodysuit">👕</span>
+                <span class="sb-cloth sb-cloth-bib">🧣</span>
+                <span class="sb-cloth sb-cloth-shirt">👚</span>
+            </div>
+
+            <!-- Cloud decorations -->
+            <div class="sb-cloud sb-cloud-1"></div>
+            <div class="sb-cloud sb-cloud-2"></div>
+            <div class="sb-cloud sb-cloud-3"></div>
+
+            <!-- Logo row -->
+            <div class="sb-brand-logo-row">
+                <div class="sb-mascot-wrap">
+                    <i class="bi bi-bag-heart-fill"></i>
+                </div>
+                <div class="sb-brand-identity">
+                    <div class="sb-brand-title">Sáu Bảnh</div>
+                    <div class="sb-brand-slogan-badge">
+                        ♥ Bán hàng bằng sự tử tế
+                    </div>
+                </div>
+                <span class="sb-star-yellow">★</span>
+            </div>
+
+            <!-- Main heading -->
+            <div class="sb-brand-heading">
+                <h1>Sáu Bảnh</h1>
+                <p>Hệ thống quản lý bán hàng<br>thời trang trẻ em VNXK</p>
+            </div>
+
+            <!-- Divider -->
+            <div class="sb-divider"></div>
+
+            <!-- Feature list -->
+            <ul class="sb-feature-list">
+                <li>
+                    <span class="sb-feat-icon"><i class="bi bi-bag-check-fill"></i></span>
+                    <span>Bán hàng nhanh chóng</span>
+                </li>
+                <li>
+                    <span class="sb-feat-icon"><i class="bi bi-box-seam-fill"></i></span>
+                    <span>Quản lý tồn kho thông minh</span>
+                </li>
+                <li>
+                    <span class="sb-feat-icon"><i class="bi bi-bar-chart-fill"></i></span>
+                    <span>Theo dõi doanh thu dễ dàng</span>
+                </li>
+                <li>
+                    <span class="sb-feat-icon"><i class="bi bi-shield-check"></i></span>
+                    <span>Phân quyền theo vai trò</span>
+                </li>
+            </ul>
+
+            <!-- Bottom teddy decoration -->
+            <div class="sb-bottom-deco">
+                <div class="sb-grass"></div>
+                <div class="sb-teddy">🧸</div>
+                <div class="sb-bag">🛍️</div>
+            </div>
+
+        </section>
+
+        <!-- ══ RIGHT: FORM PANEL ══════════════════════════════════════ -->
+        <section class="sb-form-panel">
+
+            <!-- Decorative stars in form panel -->
+            <span class="sb-form-star sb-form-star-1">✦</span>
+            <span class="sb-form-star sb-form-star-2">♥</span>
+
+            <div class="sb-login-card">
+
+                <!-- Icon top -->
+                <div class="sb-login-icon">
+                    <i class="bi bi-bag-heart-fill"></i>
+                </div>
+
+                <h2 class="sb-card-title">Đăng nhập hệ thống</h2>
+                <p class="sb-card-sub">Nhập thông tin tài khoản của bạn</p>
+
+                <!-- Flash messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="sb-flash-area">
+                    {% for category, message in messages %}
+                    <div class="sb-alert sb-alert-{{ category }}">
+                        <i
+                            class="bi {% if category == 'danger' %}bi-exclamation-circle-fill{% elif category == 'success' %}bi-check-circle-fill{% else %}bi-info-circle-fill{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+
+                <!-- Form -->
+                <form method="POST" action="{{ url_for('auth.login') }}" class="sb-form" id="loginForm">
+
+                    <div class="sb-field">
+                        <label class="sb-label">
+                            <i class="bi bi-person me-1"></i> Tên đăng nhập
+                        </label>
+                        <div class="sb-input-wrap">
+                            <i class="bi bi-person sb-input-icon"></i>
+                            <input type="text" name="username" id="username" class="sb-input"
+                                placeholder="Nhập tên đăng nhập..." autocomplete="username" required>
+                        </div>
+                    </div>
+
+                    <div class="sb-field">
+                        <label class="sb-label">
+                            <i class="bi bi-lock me-1"></i> Mật khẩu
+                        </label>
+                        <div class="sb-input-wrap">
+                            <i class="bi bi-lock sb-input-icon"></i>
+                            <input type="password" name="password" id="passwordInput" class="sb-input"
+                                placeholder="Nhập mật khẩu..." autocomplete="current-password" required>
+                            <button type="button" class="sb-eye-btn" id="togglePassword" onclick="toggleSbPassword()">
+                                <i class="bi bi-eye" id="pwEyeIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="sb-submit-btn" id="loginBtn">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>
+                        Đăng nhập
+                    </button>
+
+                </form>
+
+                <div class="sb-login-note">
+                    <span class="sb-dot">♥</span>
+                    <i class="bi bi-shield-lock"></i>
+                    Chỉ dành cho nhân viên nội bộ
+                    <span class="sb-dot">♥</span>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+    function toggleSbPassword() {
+        const pw = document.getElementById('passwordInput');
+        const icon = document.getElementById('pwEyeIcon');
+        if (pw.type === 'password') {
+            pw.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+        } else {
+            pw.type = 'password';
+            icon.className = 'bi bi-eye';
+        }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function () {
+        const btn = document.getElementById('loginBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...';
+    });
+</script>
+{% endblock %}

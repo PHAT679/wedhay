@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+{% block title %}Bán hàng - Sáu Bảnh{% endblock %}
+{% block page_title %}<i class="bi bi-cash-register me-2"></i>Bán hàng{% endblock %}
+
+{% block content %}
+<div class="pos-layout">
+
+    <div class="pos-left d-flex flex-column gap-3">
+        <div class="card pos-card shadow-sm border-0" id="create-invoice-section">
+            <div class="card-header">
+                <h6 class="fw-bold mb-0"><i class="bi bi-receipt-cutoff me-2"></i>Thông tin hóa đơn</h6>
+            </div>
+            <div class="card-body">
+                {% if current_invoice_id %}
+                <div class="invoice-status-panel">
+                    <div class="invoice-status-main">
+                        <span class="invoice-id-label">Mã hóa đơn hiện tại</span>
+                        <div class="invoice-id-value">{{ current_invoice_id }}</div>
+                    </div>
+                    <span class="badge-status status-ok">Đang xử lý</span>
+                </div>
+                <div class="invoice-meta-grid mt-3">
+                    <div class="invoice-meta-item">
+                        <span class="meta-label">Nhân viên</span>
+                        <span class="meta-value">{{ current_employee_id }}{% if current_employee_name %} - {{ current_employee_name }}{% endif %}</span>
+                    </div>
+                    {% if selected_customer and selected_customer.MAKH %}
+                    <div class="invoice-meta-item">
+                        <span class="meta-label">Mã khách hàng</span>
+                        <span class="meta-value">{{ selected_customer.MAKH }}</span>
+                    </div>
+                    <div class="invoice-meta-item">
+                        <span class="meta-label">Tên khách hàng</span>
+                        <span class="meta-value">{{ selected_customer.TENKH or '—' }}</span>
+                    </div>
+                    <div class="invoice-meta-item">
+                        <span class="meta-label">SĐT</span>
+                        <span class="meta-value">{{ selected_customer.SDT or '—' }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <form action="{{ url_for('sales.create_invoice') }}" method="POST" class="invoice-form-grid">
+                    <div class="form-field">
+                        <label>Mã hóa đơn</label>
+                        {% if next_invoice_id %}
+                        <input type="text" name="mahd" value="{{ next_invoice_id }}" readonly>
+                        {% else %}
+                        <input type="text" class="bg-danger-subtle text-danger" value="Không thể sinh mã" readonly>
+                        <small class="text-danger">Kiểm tra procedure usp_SINH_MA_HOADON_BAN</small>
+                        {% endif %}
+                    </div>
+                    <div class="form-field">
+                        <label>Mã khách hàng (tùy chọn)</label>
+                        <input type="text" name="makh" placeholder="VD: KH000001">
+                    </div>
+                    <div class="form-field">
+                        <label>Nhân viên</label>
+                        <input type="text" value="{{ current_employee_id }}{% if current_employee_name %} - {{ current_employee_name }}{% endif %}" readonly>
+                    </div>
+                    <div class="form-field">
+                        <label>Chiết khấu (%)</label>
+                        <input type="number" name="chietkhau" min="0" max="100" value="0">
+                    </div>
+                    <button type="submit" class="btn-create-invoice" {% if not next_invoice_id or not current_employee_id %}disabled{% endif %}>
+                        <i class="bi bi-plus-circle"></i> Tạo hóa đơn
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card pos-card shadow-sm border-0 {% if not current_invoice_id %}opacity-50{% endif %}" id="add-item-section">
+            <div class="card-header">
+                <h6 class="fw-bold mb-0"><i class="bi bi-bag-plus me-2"></i>Sản phẩm đang chọn</h6>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('sales.add_item') }}" method="POST" class="add-item-form m-0" onsubmit="return validateAddItem()">
+                    <div class="position-relative">
+                        <label class="mini-label">Mã sản phẩm chi tiết</label>
+                        <input type="text" class="selected-product-input" name="maspct" id="maspctInput" required readonly placeholder="Chọn sản phẩm từ danh sách bên phải" {% if not current_invoice_id %}disabled{% endif %}>
+                    </div>
+                    <div>
+                        <label class="mini-label">Số lượng</label>
+                        <div class="quantity-stepper">
+                            <button class="btn-step" type="button" onclick="changeQty(-1)" {% if not current_invoice_id %}disabled{% endif %}><i class="bi bi-dash"></i></button>
+                            <input type="number" class="step-input" name="soluong" id="soluongInput" value="1" min="1" required {% if not current_invoice_id %}disabled{% endif %}>
+                            <button class="btn-step" type="button" onclick="changeQty(1)" {% if not current_invoice_id %}disabled{% endif %}><i class="bi bi-plus"></i></button>
+                        </div>
+                    </div>
+                    <div class="align-self-end">
+                        <button type="submit" class="btn btn-success w-100 btn-add-cart" {% if not current_invoice_id %}disabled{% endif %}>
+                            <i class="bi bi-cart-plus me-1"></i>Thêm vào giỏ
+                        </button>
+                    </div>
+                </form>
+                <div id="selectedProductPreview" class="selected-product-preview mt-3" style="display:none;">
+                    <div class="preview-title" id="selectedProductName">Sản phẩm</div>
+                    <div class="preview-meta">
+                        <span id="selectedProductCode"></span>
+                        <span id="selectedProductVariant"></span>
+                    </div>
+                    <div class="preview-price" id="selectedProductPrice"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card pos-card shadow-sm border-0 d-flex flex-column" id="cart-section">
+            <div class="card-header">
+                <h6 class="fw-bold mb-0"><i class="bi bi-cart3 me-2"></i>Giỏ hàng / Chi tiết hóa đơn</h6>
+            </div>
+            <div class="card-body p-0 cart-table-container">
+                <div class="table-responsive h-100">
+                    <table class="table table-hover align-middle mb-0 cart-table">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th class="text-center">STT</th>
+                                <th>Sản phẩm</th>
+                                <th class="text-center">SL</th>
+                                <th class="text-end">Đơn giá</th>
+                                <th class="text-end pe-3">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items|default([]) %}
+                            <tr>
+                                <td class="text-center text-muted">{{ loop.index }}</td>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ item.ten_san_pham }}</div>
+                                    <small class="text-muted">{{ item.ma_spct }} • {{ item.mau or 'N/A' }} / {{ item.size or 'N/A' }}</small>
+                                </td>
+                                <td class="text-center"><span class="badge bg-primary rounded-pill px-3 py-1">{{ item.so_luong }}</span></td>
+                                <td class="text-end text-muted">{{ "{:,.0f}".format(item.don_gia) }}</td>
+                                <td class="text-end pe-3 fw-bold text-dark">{{ "{:,.0f}".format(item.thanh_tien) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="cart-empty-state">
+                                    <i class="bi bi-cart-x"></i>
+                                    <div>{% if current_invoice_id %}Chưa có sản phẩm trong giỏ hàng.{% else %}Vui lòng tạo hóa đơn trước.{% endif %}</div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        {% if cart_items %}
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold">Tổng cộng</td>
+                                <td class="text-end pe-3 fw-bold text-primary">{{ "{:,.0f}".format(invoice_summary.tam_tinh|default(0)) }}</td>
+                            </tr>
+                        </tfoot>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card pos-card shadow-sm border-0 {% if not current_invoice_id %}opacity-75{% endif %}">
+            <div class="card-header">
+                <h6 class="fw-bold mb-0"><i class="bi bi-wallet2 me-2"></i>Tích điểm / Sử dụng điểm / Thanh toán</h6>
+            </div>
+            <div class="card-body payment-bottom-wrap">
+                <div class="customer-row" id="loyaltyPanel"
+                     data-customer-phone-api="{{ url_for('sales.customer_by_phone') }}"
+                     data-set-customer-api="{{ url_for('sales.set_customer') }}"
+                     data-current-makh="{{ selected_customer.MAKH if selected_customer and selected_customer.MAKH else '' }}">
+                    <div class="customer-input-box">
+                        <div class="section-caption">Thông tin khách hàng</div>
+                        <label class="mini-label mb-1">Số điện thoại khách hàng</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="customerPhoneInput"
+                            inputmode="numeric"
+                            maxlength="10"
+                            placeholder="Nhập SĐT khách hàng..."
+                            value="{{ selected_customer.SDT if selected_customer and selected_customer.SDT else '' }}"
+                            {% if not current_invoice_id %}disabled{% endif %}
+                        >
+                        <div id="customerLookupHint" class="customer-lookup-hint mt-2"></div>
+                    </div>
+                    <div class="customer-status-box">
+                        {% if selected_customer and selected_customer.MAKH %}
+                        <div class="member-line">{{ selected_customer.MAKH }} - {{ selected_customer.TENKH or '—' }}</div>
+                        <div class="member-phone">{{ selected_customer.SDT or '—' }}</div>
+                        <div class="member-points">Điểm hiện có: <strong>{{ selected_customer.TONG_DIEM or 0 }} điểm</strong></div>
+                        <div class="mt-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="use_points" id="usePointsCheck" value="true" form="checkoutForm"
+                                       {% if use_points_checked %}checked{% endif %}
+                                       {% if (selected_customer.TONG_DIEM or 0) < 5 or not current_invoice_id %}disabled{% endif %}
+                                       onchange="calculateAmountDue()">
+                                <label class="form-check-label fw-semibold" for="usePointsCheck">Sử dụng 5 điểm giảm 50.000</label>
+                            </div>
+                        </div>
+                        {% if (selected_customer.TONG_DIEM or 0) < 5 %}
+                        <div class="text-danger small mt-1">Khách chưa đủ 5 điểm để sử dụng</div>
+                        {% endif %}
+                        <div class="loyalty-note mt-2">Nếu doanh thu thực trả sau chiết khấu và giảm điểm còn từ 250.000đ trở lên sẽ cộng 1 điểm.</div>
+                        {% else %}
+                        <div class="guest-note">
+                            <div class="fw-bold text-secondary">Khách lẻ</div>
+                            <div class="text-muted">Không áp dụng tích điểm / sử dụng điểm</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="payment-row {% if not current_invoice_id or not cart_items %}opacity-75{% endif %}">
+                    <form action="{{ url_for('sales.checkout') }}" method="POST" id="checkoutForm" class="payment-form-grid">
+                        <input type="hidden" id="tongTienHang" value="{{ invoice_summary.tam_tinh|default(0) }}">
+                        <input type="hidden" id="chietKhauPercent" name="chietkhau" value="{{ invoice_summary.chiet_khau_percent|default(0) }}">
+                        <input type="hidden" id="tongCanThanhToan" value="{{ invoice_summary.tong_can_thanh_toan|default(0) }}">
+
+                        <div class="summary-box">
+                            <div class="section-caption">Tóm tắt hóa đơn</div>
+                            <div class="summary-list">
+                                <div class="summary-item">
+                                    <span>Tổng tiền hàng</span>
+                                    <strong>{{ "{:,.0f}".format(invoice_summary.tam_tinh|default(0)) }}</strong>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Chiết khấu ({{ invoice_summary.chiet_khau_percent|default(0) }}%)</span>
+                                    <strong id="tienChietKhauDisplay">- {{ "{:,.0f}".format(invoice_summary.tien_chiet_khau|default(0)) }}</strong>
+                                </div>
+                                <div class="summary-item" {% if not selected_customer or not selected_customer.MAKH %}style="display: none;"{% endif %}>
+                                    <span>Giảm từ điểm</span>
+                                    <strong id="giamTuDiemDisplay">- {{ "{:,.0f}".format(invoice_summary.giam_bang_diem|default(0)) }}</strong>
+                                </div>
+                                <div class="summary-item total-line">
+                                    <span>Khách cần trả</span>
+                                    <strong class="total-money" id="khachCanTraDisplay">{{ "{:,.0f}".format(invoice_summary.tong_can_thanh_toan|default(0)) }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="cash-box">
+                            <div class="section-caption">Thu tiền</div>
+                            <label class="form-label fw-semibold mb-1">Tiền khách đưa</label>
+                            <input type="number" class="form-control form-control-lg fw-bold text-success" name="tienKhachDua" id="tienKhachDua" placeholder="0" required {% if not current_invoice_id or not cart_items %}disabled{% endif %}>
+                            <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
+                                <span class="text-muted">Tiền thừa trả khách</span>
+                                <span class="fs-5 fw-bold" id="tienThua">0</span>
+                            </div>
+                            <div id="paymentMessage" class="text-danger small mb-2 fw-bold text-end" style="display:none;">Khách đưa chưa đủ tiền!</div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold btn-checkout text-uppercase" id="btnThanhToan" {% if not current_invoice_id or not cart_items %}disabled{% endif %}>
+                                Thanh Toán
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pos-right">
+        <div class="card pos-card h-100 shadow-sm border-0 d-flex flex-column">
+            <div class="card-header">
+                <h6 class="fw-bold mb-0"><i class="bi bi-box-seam me-2"></i>Danh sách sản phẩm</h6>
+            </div>
+            <div class="product-toolbar">
+                <div class="product-search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="posSearch" placeholder="Tìm theo tên, mã SPCT, màu, size...">
+                </div>
+
+                <div class="product-filter-tabs">
+                    <button type="button" class="filter-tab active" data-filter="all" onclick="filterProducts(this, 'all')">
+                        Tất cả
+                        <span class="filter-count">{{ products|default([])|length }}</span>
+                    </button>
+                    <button type="button" class="filter-tab" data-filter="available" onclick="filterProducts(this, 'available')">Còn hàng</button>
+                    <button type="button" class="filter-tab" data-filter="low" onclick="filterProducts(this, 'low')">Sắp hết</button>
+                    <button type="button" class="filter-tab" data-filter="out" onclick="filterProducts(this, 'out')">Hết hàng</button>
+                </div>
+            </div>
+
+            <div class="card-body p-0 product-list flex-grow-1">
+                <div class="table-responsive h-100">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th class="ps-3">Sản phẩm</th>
+                                <th class="text-end">Giá</th>
+                                <th class="text-center">Tồn</th>
+                                <th class="text-center pe-2">Chọn</th>
+                            </tr>
+                        </thead>
+                        <tbody id="posTableBody">
+                            {% for p in products|default([]) %}
+                            {% set is_out = p.TONKHO <= 0 %}
+                            {% set is_low = p.TONKHO > 0 and p.TONKHO <= 10 %}
+                            {% set status = 'out' if is_out else ('low' if is_low else 'available') %}
+
+                            <tr class="product-row {% if is_out %}opacity-50{% endif %}" data-status="{{ status }}">
+                                <td class="ps-3 py-2">
+                                    <div class="fw-bold text-dark product-name-full" title="{{ p.TENSANPHAM }}">{{ p.TENSANPHAM }}</div>
+                                    <small class="text-muted d-block">{{ p.MASPCT }}</small>
+                                    <small class="text-muted">{{ p.MAU or 'N/A' }} / {{ p.SIZE or 'N/A' }}</small>
+                                </td>
+                                <td class="text-end fw-bold text-primary">{{ "{:,.0f}".format(p.GIA_BAN) }}</td>
+                                <td class="text-center">
+                                    <span class="badge {% if is_out %}bg-danger{% elif is_low %}bg-warning text-dark{% else %}bg-success{% endif %} rounded-pill">
+                                        {{ p.TONKHO }}
+                                    </span>
+                                </td>
+                                <td class="text-center pe-2">
+                                    <button type="button" class="btn btn-sm btn-primary btn-choose-product text-nowrap {% if is_out %}disabled{% endif %}"
+                                            data-maspct="{{ p.MASPCT }}"
+                                            data-tensp="{{ p.TENSANPHAM }}"
+                                            data-mau="{{ p.MAU or 'N/A' }}"
+                                            data-size="{{ p.SIZE or 'N/A' }}"
+                                            data-gia="{{ p.GIA_BAN or 0 }}">
+                                        Chọn
+                                    </button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-5">
+                                    <i class="bi bi-box fs-2 d-block mb-2 text-light"></i>
+                                    Không có sản phẩm nào.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/sales.js') }}"></script>
+{% endblock %}

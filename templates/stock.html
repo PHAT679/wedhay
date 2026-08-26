@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Tồn kho - Sáu Bảnh{% endblock %}
+{% block page_title %}<i class="bi bi-archive me-2"></i>Quản lý tồn kho{% endblock %}
+
+{% block content %}
+<!-- Tabs -->
+<ul class="nav nav-tabs nav-tabs-modern mb-4" id="stockTabs">
+    <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#tab-tonkho">
+            <i class="bi bi-archive me-1"></i> Tồn kho hiện tại
+            <span class="badge bg-primary ms-1">{{ stock_count }}</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-sap-het">
+            <i class="bi bi-exclamation-triangle me-1"></i> Sắp hết hàng
+            {% if low_stock_count > 0 %}
+            <span class="badge bg-warning text-dark ms-1">{{ low_stock_count }}</span>
+            {% endif %}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-ton-lau">
+            <i class="bi bi-hourglass-split me-1"></i> Hàng tồn lâu
+            {% if old_stock_count > 0 %}
+            <span class="badge bg-danger ms-1">{{ old_stock_count }}</span>
+            {% endif %}
+        </a>
+    </li>
+</ul>
+
+<!-- Search -->
+<div class="search-box mb-3" style="max-width:360px">
+    <i class="bi bi-search search-box-icon"></i>
+    <input type="text" id="stockSearch" class="form-control" placeholder="Tìm sản phẩm..." oninput="searchStock()">
+</div>
+
+<div class="tab-content">
+
+    <!-- Tab 1: Tồn kho hiện tại -->
+    <div class="tab-pane fade show active" id="tab-tonkho">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-archive me-2 text-primary"></i>
+                <strong>Tồn kho hiện tại</strong>
+            </div>
+            <div class="card-body p-0">
+                {% if stock_items %}
+                <div class="table-responsive">
+                    <table class="table table-hover data-table stock-search-table mb-0" id="stockTable">
+                        <thead>
+                            <tr>
+                                <th>Mã SP CT</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Màu / Size</th>
+                                <th class="text-center">Số lượng tồn</th>
+                                <th class="text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sp in stock_items %}
+                            {% set sl = sp.ton_kho %}
+                            <tr>
+                                <td><code class="maspct-code">{{ sp.ma_spct or 'N/A' }}</code></td>
+                                <td><strong>{{ sp.ten_san_pham or 'N/A' }}</strong></td>
+                                <td>
+                                    {% if sp.mau %}<span class="variant-chip color-chip">{{ sp.mau }}</span>{% endif %}
+                                    {% if sp.size %}<span class="variant-chip size-chip">{{ sp.size }}</span>{% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="fw-bold {% if sl == 0 %}text-danger{% elif sl <= 5 %}text-warning{% else %}text-success{% endif %}">
+                                        {{ sl }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    {% if sl == 0 %}
+                                    <span class="badge-status status-out">Hết hàng</span>
+                                    {% elif sl <= 5 %}
+                                    <span class="badge-status status-low">Sắp hết</span>
+                                    {% else %}
+                                    <span class="badge-status status-ok">Bình thường</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="bi bi-archive"></i><p>Không có dữ liệu tồn kho</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Sắp hết -->
+    <div class="tab-pane fade" id="tab-sap-het">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-exclamation-triangle me-2 text-warning"></i>
+                <strong>Sản phẩm sắp hết hàng</strong>
+                <span class="text-muted ms-2">(Tồn kho ≤ 5)</span>
+            </div>
+            <div class="card-body p-0">
+                {% if low_stock_items %}
+                <div class="table-responsive">
+                    <table class="table table-hover data-table stock-search-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mã SP CT</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Màu / Size</th>
+                                <th class="text-center">Tồn kho</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sp in low_stock_items %}
+                            <tr class="table-warning">
+                                <td><code class="maspct-code">{{ sp.ma_spct or 'N/A' }}</code></td>
+                                <td><strong>{{ sp.ten_san_pham or 'N/A' }}</strong></td>
+                                <td>
+                                    {% if sp.mau %}<span class="variant-chip color-chip">{{ sp.mau }}</span>{% endif %}
+                                    {% if sp.size %}<span class="variant-chip size-chip">{{ sp.size }}</span>{% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-warning text-dark fw-bold">{{ sp.ton_kho }}</span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('purchase.index') }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-truck me-1"></i> Nhập hàng
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-check-circle text-success"></i>
+                    <p class="text-success fw-bold">Tất cả sản phẩm còn đủ hàng!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 3: Hàng tồn lâu -->
+    <div class="tab-pane fade" id="tab-ton-lau">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-hourglass-split me-2 text-danger"></i>
+                <strong>Hàng tồn kho lâu</strong>
+            </div>
+            <div class="card-body p-0">
+                {% if old_stock_items %}
+                <div class="table-responsive">
+                    <table class="table table-hover data-table stock-search-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mã SP CT</th>
+                                <th>Tên sản phẩm</th>
+                                <th class="text-center">Tồn kho</th>
+                                <th>Ngày bán cuối</th>
+                                <th class="text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sp in old_stock_items %}
+                            <tr class="table-danger">
+                                <td><code class="maspct-code">{{ sp.ma_spct or 'N/A' }}</code></td>
+                                <td><strong>{{ sp.ten_san_pham or 'N/A' }}</strong></td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">{{ sp.ton_kho }}</span>
+                                </td>
+                                <td>
+                                    <small class="text-danger">
+                                        {% if sp.ngay_nhap %}{{ sp.ngay_nhap.strftime('%d/%m/%Y') if sp.ngay_nhap is not string else sp.ngay_nhap }}
+                                        {% else %}N/A{% endif %}
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge-status status-out">Tồn lâu</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-clock-history text-muted"></i>
+                    <p>Không có hàng tồn kho lâu</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,381 @@
+{% extends "base.html" %}
+
+{% block title %}Nhà cung cấp - Sáu Bảnh{% endblock %}
+{% block page_title %}<i class="bi bi-building me-2"></i>Nhà cung cấp{% endblock %}
+
+{% block content %}
+<div class="page-actions mb-4 d-flex align-items-center justify-content-between">
+    <div class="search-box" style="max-width:320px">
+        <i class="bi bi-search search-box-icon"></i>
+        <input type="text" class="form-control" placeholder="Tìm nhà cung cấp..." oninput="filterSuppliers(this.value)">
+    </div>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSupplierModal">
+        <i class="bi bi-plus-lg me-1"></i> Thêm nhà cung cấp
+    </button>
+</div>
+
+<div class="row g-4">
+    <!-- Suppliers Table -->
+    <div class="col-xl-7">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-building me-2 text-primary"></i>
+                <strong>Danh sách nhà cung cấp</strong>
+                <span class="badge bg-primary ms-2">{{ supplier_count|default(suppliers|length) }}</span>
+            </div>
+            <div class="card-body p-0">
+                {% if suppliers and suppliers|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="suppliersTable">
+                        <thead>
+                            <tr>
+                                <th>Mã NCC</th>
+                                <th>Tên nhà cung cấp</th>
+                                <th>Điện thoại</th>
+                                <th>STK</th>
+                                <th>Địa chỉ</th>
+                                <th class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="suppliersBody">
+                            {% for ncc in suppliers %}
+                            <tr>
+                                <td><code class="maspct-code">{{ ncc.ma_ncc or 'N/A' }}</code></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="supplier-icon">
+                                            <i class="bi bi-building"></i>
+                                        </div>
+                                        <strong>{{ ncc.tenncc or 'N/A' }}</strong>
+                                    </div>
+                                </td>
+                                <td>{{ ncc.sdt_ncc or '—' }}</td>
+                                <td>{{ ncc.stk_ncc or '—' }}</td>
+                                <td><span class="text-muted">{{ ncc.diachi_ncc or '—' }}</span></td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('purchase.index') }}" class="btn btn-sm btn-outline-primary" title="Nhập hàng từ NCC này">
+                                        <i class="bi bi-truck"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-building"></i>
+                    <p>Chưa có nhà cung cấp nào</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Debt Table -->
+    <div class="col-xl-5">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-wallet2 me-2 text-warning"></i>
+                <strong>Công nợ nhà cung cấp</strong>
+                {% if supplier_debts and supplier_debts|length > 0 %}
+                <span class="badge bg-warning text-dark ms-2">{{ supplier_debt_count|default(supplier_debts|length) }}</span>
+                {% endif %}
+            </div>
+            <div class="card-body p-0">
+                {% if supplier_debts and supplier_debts|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Nhà cung cấp</th>
+                                <th class="text-end">Tổng nợ</th>
+                                <th class="text-end">Đã trả</th>
+                                <th class="text-end">Còn nợ</th>
+                                <th class="text-center">Trạng thái</th>
+                                <th class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cn in supplier_debts %}
+                            <tr>
+                                <td>{{ cn.tenncc or cn.ma_ncc or 'N/A' }}</td>
+                                <td class="text-end">{{ "{:,.0f}".format(cn.tong_no or 0) }}đ</td>
+                                <td class="text-end">{{ "{:,.0f}".format(cn.da_tra or 0) }}đ</td>
+                                <td class="text-end"><strong class="text-danger">{{ "{:,.0f}".format(cn.cong_no or 0) }}đ</strong></td>
+                                <td class="text-center">
+                                    {% set trang_thai = cn.trang_thai or ('Còn nợ' if (cn.cong_no or 0) > 0 else 'Đã thanh toán') %}
+                                    {% if trang_thai == 'Còn nợ' %}
+                                    <span class="badge-status status-out">Còn nợ</span>
+                                    {% else %}
+                                    <span class="badge-status status-ok">Đã thanh toán</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    {% if (cn.cong_no or 0) > 0 %}
+                                    <button
+                                        type="button"
+                                        class="btn btn-sm btn-warning btn-pay-debt"
+                                        data-ma-ncc="{{ cn.ma_ncc }}"
+                                        data-tenncc="{{ cn.tenncc }}"
+                                    >
+                                        Thanh toán
+                                    </button>
+                                    {% else %}
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled>Đã tất toán</button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-check-circle text-success"></i>
+                    <p class="text-success">Không có công nợ tồn đọng</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Supplier Modal -->
+<div class="modal fade" id="addSupplierModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-building-add me-2 text-primary"></i>
+                    Thêm nhà cung cấp mới
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('suppliers.add_supplier') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Mã nhà cung cấp</label>
+                        {% if next_supplier_id %}
+                        <input type="text" class="form-control fw-bold text-primary" name="mancc" value="{{ next_supplier_id }}" readonly>
+                        <small class="text-muted">Mã tự động từ hệ thống</small>
+                        {% else %}
+                        <input type="text" class="form-control bg-danger-subtle text-danger" value="Không thể sinh mã" readonly>
+                        <small class="text-danger">Kiểm tra procedure usp_SINH_MA_NHACUNGCAP</small>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tên nhà cung cấp <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" name="tenncc" placeholder="Tên công ty / cá nhân" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" name="sdt_ncc" placeholder="Số điện thoại">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Số tài khoản</label>
+                        <input type="text" class="form-control" name="stk_ncc" placeholder="Nhập số tài khoản nhà cung cấp">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Địa chỉ</label>
+                        <input type="text" class="form-control" name="diachi_ncc" placeholder="Địa chỉ công ty">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i> Thêm nhà cung cấp
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Pay Debt Modal -->
+<div class="modal fade" id="payDebtModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-cash-coin me-2 text-warning"></i>Thanh toán công nợ nhà cung cấp</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('suppliers.pay_debt') }}" id="payDebtForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nhà cung cấp</label>
+                        <input type="text" id="payDebtSupplierName" class="form-control" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hóa đơn nhập còn nợ</label>
+                        <select class="form-select" id="payDebtInvoiceSelect" required>
+                            <option value="">Chọn hóa đơn nhập</option>
+                        </select>
+                        <input type="hidden" name="MAHDN" id="payDebtMAHDN">
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Tổng tiền hàng</label>
+                            <input type="text" id="payDebtTongTien" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Chiết khấu (%)</label>
+                            <input type="text" id="payDebtChietKhau" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tiền giảm chiết khấu</label>
+                            <input type="text" id="payDebtTienChietKhau" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Phải trả sau chiết khấu</label>
+                            <input type="text" id="payDebtPhaiTra" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Đã trả</label>
+                            <input type="text" id="payDebtDaTra" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Còn nợ</label>
+                            <input type="text" id="payDebtCongNo" class="form-control fw-bold text-danger" readonly>
+                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Số tiền thanh toán</label>
+                        <input type="number" name="SOTIENTRA" id="payDebtAmount" class="form-control" min="1" step="1" required>
+                        <small class="text-muted">Không nhập vượt quá số nợ còn lại của hóa đơn.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-check-circle me-1"></i>Xác nhận thanh toán
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function filterSuppliers(q) {
+    const rows = document.querySelectorAll('#suppliersBody tr');
+    q = q.toLowerCase();
+    rows.forEach(r => {
+        r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+
+function formatMoney(value) {
+    return Number(value || 0).toLocaleString('vi-VN') + 'đ';
+}
+
+let debtInvoices = [];
+const payDebtModal = new bootstrap.Modal(document.getElementById('payDebtModal'));
+const invoiceSelect = document.getElementById('payDebtInvoiceSelect');
+const payDebtMAHDN = document.getElementById('payDebtMAHDN');
+const payDebtAmount = document.getElementById('payDebtAmount');
+
+function renderInvoiceInfo(invoice) {
+    document.getElementById('payDebtTongTien').value = formatMoney(invoice?.tongtien);
+    document.getElementById('payDebtChietKhau').value = Number(invoice?.chietkhau || 0).toLocaleString('vi-VN') + '%';
+    document.getElementById('payDebtTienChietKhau').value = formatMoney(invoice?.tien_chiet_khau);
+    document.getElementById('payDebtPhaiTra').value = formatMoney(invoice?.phai_tra);
+    document.getElementById('payDebtDaTra').value = formatMoney(invoice?.da_tra);
+    document.getElementById('payDebtCongNo').value = formatMoney(invoice?.cong_no);
+    const congNoRaw = Number(invoice?.cong_no || 0);
+    payDebtAmount.max = String(congNoRaw);
+    payDebtAmount.step = '1';
+    payDebtAmount.min = '1';
+}
+
+function setDefaultInvoiceInfo() {
+    renderInvoiceInfo(null);
+    payDebtMAHDN.value = '';
+    payDebtAmount.value = '';
+    payDebtAmount.max = '';
+}
+
+document.querySelectorAll('.btn-pay-debt').forEach(btn => {
+    btn.addEventListener('click', async () => {
+        const maNcc = btn.dataset.maNcc;
+        const tenNcc = btn.dataset.tenncc || maNcc;
+        document.getElementById('payDebtSupplierName').value = `${maNcc} - ${tenNcc}`;
+        invoiceSelect.innerHTML = '<option value="">Đang tải hóa đơn...</option>';
+        setDefaultInvoiceInfo();
+
+        try {
+            const response = await fetch(`/suppliers/${maNcc}/unpaid-invoices`);
+            const payload = await response.json();
+            if (!payload.success) {
+                throw new Error(payload.message || 'Không thể tải danh sách hóa đơn nợ.');
+            }
+
+            debtInvoices = payload.data || [];
+            invoiceSelect.innerHTML = '<option value="">Chọn hóa đơn nhập</option>';
+            debtInvoices.forEach(inv => {
+                const opt = document.createElement('option');
+                opt.value = inv.mahdn;
+                opt.dataset.tongtien = String(Number(inv.tongtien || 0));
+                opt.dataset.chietkhau = String(Number(inv.chietkhau || 0));
+                opt.dataset.tienChietKhau = String(Number(inv.tien_chiet_khau || 0));
+                opt.dataset.phaiTra = String(Number(inv.phai_tra || 0));
+                opt.dataset.daTra = String(Number(inv.da_tra || 0));
+                opt.dataset.congNo = String(Number(inv.cong_no || 0));
+                opt.dataset.congNoText = formatMoney(inv.cong_no);
+                opt.textContent = `${inv.mahdn} - Còn nợ: ${formatMoney(inv.cong_no)}`;
+                invoiceSelect.appendChild(opt);
+            });
+            payDebtModal.show();
+        } catch (err) {
+            alert(err.message || 'Không thể tải hóa đơn công nợ.');
+        }
+    });
+});
+
+invoiceSelect.addEventListener('change', () => {
+    const selectedOption = invoiceSelect.options[invoiceSelect.selectedIndex];
+    const selected = debtInvoices.find(inv => inv.mahdn === invoiceSelect.value);
+    if (!selected) {
+        setDefaultInvoiceInfo();
+        return;
+    }
+
+    // Ưu tiên data attributes từ option để đồng bộ UI theo hóa đơn đang chọn
+    const dataDrivenInvoice = {
+        ...selected,
+        tongtien: Number(selectedOption?.dataset.tongtien ?? selected.tongtien ?? 0),
+        chietkhau: Number(selectedOption?.dataset.chietkhau ?? selected.chietkhau ?? 0),
+        tien_chiet_khau: Number(selectedOption?.dataset.tienChietKhau ?? selected.tien_chiet_khau ?? 0),
+        phai_tra: Number(selectedOption?.dataset.phaiTra ?? selected.phai_tra ?? 0),
+        da_tra: Number(selectedOption?.dataset.daTra ?? selected.da_tra ?? 0),
+        cong_no: Number(selectedOption?.dataset.congNo ?? selected.cong_no ?? 0),
+    };
+
+    payDebtMAHDN.value = selected.mahdn || '';
+    renderInvoiceInfo(dataDrivenInvoice);
+});
+
+document.getElementById('payDebtForm').addEventListener('submit', (e) => {
+    const amount = Number(payDebtAmount.value || 0);
+    const maxDebt = Number(payDebtAmount.max || 0);
+    if (!payDebtMAHDN.value) {
+        e.preventDefault();
+        alert('Vui lòng chọn hóa đơn cần thanh toán.');
+        return;
+    }
+    if (amount <= 0) {
+        e.preventDefault();
+        alert('Số tiền thanh toán phải lớn hơn 0.');
+        return;
+    }
+    if (maxDebt > 0 && amount > maxDebt) {
+        e.preventDefault();
+        alert('Số tiền thanh toán không được vượt quá số nợ còn lại.');
+    }
+});
+</script>
+{% endblock %}

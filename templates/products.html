@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Sản phẩm - Sáu Bảnh{% endblock %}
+{% block page_title %}<i class="bi bi-box-seam me-2"></i>Quản lý sản phẩm{% endblock %}
+
+{% block content %}
+<div class="page-actions mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <form method="GET" action="{{ url_for('products.index') }}" class="d-flex align-items-center gap-2 m-0" id="searchForm">
+        <div class="search-box">
+            <i class="bi bi-search search-box-icon"></i>
+            <input type="text" name="q" value="{{ keyword or '' }}" id="productSearch" class="form-control" placeholder="Tìm sản phẩm...">
+        </div>
+        <select class="form-select w-auto" name="status" id="statusFilter" onchange="this.form.submit()">
+            <option value="all" {% if selected_status == 'all' %}selected{% endif %}>Tất cả trạng thái</option>
+            <option value="available" {% if selected_status == 'available' %}selected{% endif %}>Còn hàng</option>
+            <option value="low" {% if selected_status == 'low' %}selected{% endif %}>Sắp hết</option>
+            <option value="out" {% if selected_status == 'out' %}selected{% endif %}>Hết hàng</option>
+        </select>
+        <button type="submit" class="btn btn-secondary d-none">Tìm kiếm</button>
+    </form>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+        <i class="bi bi-plus-lg me-1"></i> Thêm sản phẩm
+    </button>
+</div>
+
+<!-- Products Table -->
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <div>
+            <i class="bi bi-table me-2 text-primary"></i>
+            <strong>Danh sách sản phẩm</strong>
+        </div>
+        <span class="badge bg-primary" id="rowCount">{{ product_count|default(0) }} sản phẩm</span>
+    </div>
+    <div class="card-body p-0">
+        {% if products %}
+        <div class="table-responsive">
+            <table class="table table-hover data-table mb-0" id="productsTable">
+                <thead>
+                    <tr>
+                        <th>Mã SP CT</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Loại</th>
+                        <th>Màu</th>
+                        <th>Size</th>
+                        <th class="text-end">Giá bán</th>
+                        <th class="text-end">Giá nhập</th>
+                        <th class="text-center">Tồn kho</th>
+                        <th class="text-center" style="min-width: 110px;">Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="productsBody">
+                    {% for sp in products %}
+                    <tr>
+                        <td><code class="maspct-code">{{ sp.ma_spct or 'N/A' }}</code></td>
+                        <td>
+                            <strong>{{ sp.ten_san_pham or 'N/A' }}</strong>
+                        </td>
+                        <td><span class="text-muted">{{ sp.loai or '—' }}</span></td>
+                        <td>
+                            {% if sp.mau %}
+                            <span class="variant-chip color-chip">{{ sp.mau }}</span>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>
+                            {% if sp.size %}
+                            <span class="variant-chip size-chip">{{ sp.size }}</span>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td class="text-end">
+                            <strong>{{ "{:,.0f}".format(sp.gia_ban or 0) }}đ</strong>
+                        </td>
+                        <td class="text-end text-muted">
+                            {{ "{:,.0f}".format(sp.gia_nhap or 0) }}đ
+                        </td>
+                        <td class="text-center">
+                            <span class="fw-600 {% if sp.ton_kho == 0 %}text-danger{% elif sp.ton_kho <= 5 %}text-warning{% else %}text-success{% endif %}">
+                                {{ sp.ton_kho }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            {% if sp.trang_thai == 'Còn hàng' %}
+                            <span class="badge-status status-ok">Còn hàng</span>
+                            {% elif sp.trang_thai == 'Sắp hết' %}
+                            <span class="badge-status status-low">Sắp hết</span>
+                            {% else %}
+                            <span class="badge-status status-out">Hết hàng</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('sales.index') }}?select={{ sp.ma_spct }}" 
+                                   class="btn btn-outline-primary btn-sm" title="Bán hàng ngay">
+                                    <i class="bi bi-cart-plus"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-box-seam"></i>
+            <h5>Chưa có sản phẩm nào</h5>
+            <p class="text-muted">Hãy thêm sản phẩm đầu tiên hoặc kiểm tra kết nối cơ sở dữ liệu</p>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <i class="bi bi-plus-lg me-1"></i> Thêm sản phẩm
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2 text-primary"></i>
+                    Thêm sản phẩm mới
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('products.create') }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Mã SP chi tiết *</label>
+                            <input type="text" class="form-control" name="MASPCT" id="MASPCT" value="{{ next_maspct }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="TENSP" placeholder="Tên sản phẩm" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Màu sắc <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="TEN_MAU" placeholder="VD: Đỏ" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Size <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="TEN_SIZE" placeholder="VD: S, M, L" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Loại sản phẩm <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="TENLOAISP" placeholder="VD: Áo, Quần" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Giá bán (đ) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="DONGIA_BAN" placeholder="0" min="0" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Giá nhập (đ) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" name="DONGIA_NHAP" placeholder="0" min="0" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i> Thêm sản phẩm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/product.js') }}"></script>
+{% endblock %}
