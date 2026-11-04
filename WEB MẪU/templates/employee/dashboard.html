@@ -1,0 +1,82 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Lịch Phân Công - Kỹ Thuật Viên {{ nhan_vien.ten_nhan_vien }}{% endblock %}
+{% block page_title %}Lịch Hẹn Được Phân Công Cho: {{ nhan_vien.ten_nhan_vien }}{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h3 class="card-title" style="margin-bottom: 4px;">Nhiệm Vụ Kỹ Thuật Viên (UC 2)</h3>
+      <p style="color: var(--text-muted); font-size: 13.5px;">
+        Vui lòng kiểm tra các lịch hẹn được chủ tiệm phân công và phản hồi <strong>Tiếp nhận</strong> hoặc <strong>Từ chối</strong> kèm lý do.
+      </p>
+    </div>
+    <div style="font-size: 13px; background: var(--light-pink); padding: 8px 16px; border-radius: var(--radius-full); border: 1px solid var(--border-pink);">
+      Mã KTV: <strong>{{ nhan_vien.ma_nhan_vien }}</strong>
+    </div>
+  </div>
+</div>
+
+<!-- Assignments Table -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div class="table-responsive" style="border: none;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã Lịch</th>
+          <th>Khách Hàng & SĐT</th>
+          <th>Thời Gian Phục Vụ</th>
+          <th>Dịch Vụ Cần Làm</th>
+          <th>Trạng Thái Tiếp Nhận</th>
+          <th style="text-align: right;">Thao Tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pc in assignments %}
+          <tr>
+            <td><strong style="color: var(--dark-rose);">{{ pc.lich_hen.ma_lich_hen }}</strong></td>
+            <td>
+              <div style="font-weight: 600;">{{ pc.lich_hen.ten_lien_he }}</div>
+              <div style="font-size: 12px; color: var(--text-muted);">{{ pc.lich_hen.so_dien_thoai_lien_he }}</div>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: var(--dark-rose);">
+                {{ pc.lich_hen.ngay_gio_bat_dau|date:"H:i" }} &rarr; {{ pc.lich_hen.ngay_gio_ket_thuc|date:"H:i" }}
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">{{ pc.lich_hen.ngay_gio_bat_dau|date:"d/m/Y" }}</div>
+            </td>
+            <td>
+              <div style="font-size: 13px;">
+                {% for ct in pc.lich_hen.chi_tiet.all %}
+                  <div>• {{ ct.ten_dich_vu_dat }} ({{ ct.thoi_luong_dat }}p)</div>
+                {% endfor %}
+              </div>
+            </td>
+            <td>
+              {% if pc.trang_thai_tiep_nhan == 'Đã tiếp nhận' %}
+                <span class="badge badge-completed">Đã tiếp nhận</span>
+              {% elif pc.trang_thai_tiep_nhan == 'Từ chối' %}
+                <span class="badge badge-canceled">Từ chối</span>
+              {% else %}
+                <span class="badge badge-pending">Chờ bạn phản hồi</span>
+              {% endif %}
+            </td>
+            <td style="text-align: right;">
+              <a href="{% url 'employee:appointment_detail' pc.lich_hen.pk %}" class="btn btn-primary btn-sm">
+                Xem & Phản Hồi
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              Hiện bạn chưa có lịch hẹn nào được phân công.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

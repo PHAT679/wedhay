@@ -1,0 +1,123 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Xử Lý Lịch Hẹn {{ appointment.ma_lich_hen }} - Kỹ Thuật Viên{% endblock %}
+{% block page_title %}Xử Lý Lịch Hẹn: {{ appointment.ma_lich_hen }}{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+  <a href="{% url 'employee:dashboard' %}" style="font-size: 13px; color: var(--text-muted);">&larr; Quay lại danh sách lịch phân công</a>
+</div>
+
+<div style="max-width: 800px; margin: 0 auto;">
+  <div class="card" style="padding: 32px; border-radius: var(--radius-lg); margin-bottom: 24px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-pink); padding-bottom: 16px; margin-bottom: 20px;">
+      <div>
+        <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Thông Tin Khách Hàng</span>
+        <h2 style="font-size: 24px; color: var(--dark-rose); margin-top: 4px;">{{ appointment.ten_lien_he }}</h2>
+        <div style="font-size: 13.5px; color: var(--text-muted); margin-top: 4px;">
+          📞 Số điện thoại: <strong>{{ appointment.so_dien_thoai_lien_he }}</strong>
+        </div>
+      </div>
+
+      <div style="text-align: right;">
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Trạng thái tiếp nhận của bạn:</div>
+        {% if assignment.trang_thai_tiep_nhan == 'Đã tiếp nhận' %}
+          <span class="badge badge-completed" style="font-size: 14px; padding: 6px 14px;">Đã Tiếp Nhận</span>
+        {% elif assignment.trang_thai_tiep_nhan == 'Từ chối' %}
+          <span class="badge badge-canceled" style="font-size: 14px; padding: 6px 14px;">Đã Từ Chối</span>
+        {% else %}
+          <span class="badge badge-pending" style="font-size: 14px; padding: 6px 14px;">Chờ Phản Hồi</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Time slot -->
+    <div style="background: var(--light-pink); border-radius: var(--radius-md); padding: 18px; margin-bottom: 24px; border: 1px solid var(--border-pink); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 12px; color: var(--text-muted);">Thời Gian Phục Vụ:</div>
+        <strong style="font-size: 18px; color: var(--dark-rose);">
+          {{ appointment.ngay_gio_bat_dau|date:"H:i" }} &rarr; {{ appointment.ngay_gio_ket_thuc|date:"H:i" }}
+        </strong>
+        <div style="font-size: 13px; color: var(--text-muted);">{{ appointment.ngay_gio_bat_dau|date:"l, d/m/Y" }}</div>
+      </div>
+      <div>
+        <span style="font-size: 13px; background: #FFFFFF; padding: 6px 14px; border-radius: var(--radius-full); border: 1px solid var(--border-pink);">
+          ⏱ Tổng thời lượng: <strong>{{ appointment.tong_thoi_luong }} phút</strong>
+        </span>
+      </div>
+    </div>
+
+    <!-- Services to perform -->
+    <h3 style="font-size: 18px; margin-bottom: 12px;">Các Dịch Vụ Cần Thực Hiện Cho Khách</h3>
+    <div class="table-responsive" style="margin-bottom: 24px;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Tên Dịch Vụ</th>
+            <th>Thời Lượng</th>
+            <th>Yêu Cầu / Ghi Chú Của Khách</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ct in appointment.chi_tiet.all %}
+            <tr>
+              <td><strong>{{ ct.ten_dich_vu_dat }}</strong></td>
+              <td>{{ ct.thoi_luong_dat }} phút</td>
+              <td>{{ ct.ghi_chu_thuc_hien|default:"Làm theo tiêu chuẩn tiệm" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Response Action Buttons (UC 2.1 & UC 2.2) -->
+    {% if appointment.trang_thai in 'Chờ xác nhận,Đã xác nhận' and assignment.trang_thai_tiep_nhan == 'Chờ phản hồi' %}
+      <div style="border-top: 1px solid var(--border-pink); padding-top: 24px; display: flex; justify-content: flex-end; gap: 14px;">
+        <button type="button" class="btn btn-outline" style="color: #C62828 !important; border-color: #EF9A9A;" onclick="openModal('reject-modal')">
+          Từ Chối Lịch Này
+        </button>
+
+        <a href="{% url 'employee:accept_assignment' assignment.pk %}" class="btn btn-primary" onclick="return confirm('Bạn xác nhận TIẾP NHẬN phụ trách lịch hẹn này?')">
+          ✓ Tiếp Nhận Phụ Trách Lịch Hẹn
+        </a>
+      </div>
+    {% elif assignment.trang_thai_tiep_nhan == 'Đã tiếp nhận' %}
+      <div style="background: #EAF5EA; border: 1px solid #C8E6C9; border-radius: var(--radius-md); padding: 16px; color: #2E7D32; font-size: 13.5px; text-align: center;">
+        ✓ Bạn đã tiếp nhận lịch hẹn này lúc {{ assignment.thoi_diem_phan_hoi|date:"H:i - d/m/Y" }}. Vui lòng chuẩn bị đón khách đúng giờ!
+      </div>
+    {% elif assignment.trang_thai_tiep_nhan == 'Từ chối' %}
+      <div style="background: #FDE8E8; border: 1px solid #FFCDD2; border-radius: var(--radius-md); padding: 16px; color: #C62828; font-size: 13.5px;">
+        ✕ Bạn đã từ chối lịch này lúc {{ assignment.thoi_diem_phan_hoi|date:"H:i - d/m/Y" }}.<br>
+        <strong>Lý do:</strong> {{ assignment.ly_do_tu_choi }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Modal: Nhập lý do từ chối (UC 2.2) -->
+<div class="modal-overlay" id="reject-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 style="font-size: 18px; color: #C62828;">Từ Chối Lịch Hẹn Được Phân Công</h3>
+      <button type="button" class="modal-close" onclick="closeModal('reject-modal')">&times;</button>
+    </div>
+
+    <form method="post" action="{% url 'employee:reject_assignment' assignment.pk %}">
+      {% csrf_token %}
+      <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 14px;">
+        Vui lòng nhập lý do từ chối cụ thể để chủ tiệm nắm thông tin và phân công lại kỹ thuật viên khác:
+      </p>
+
+      <div class="form-group">
+        <label class="form-label">Lý do từ chối *</label>
+        <textarea name="ly_do_tu_choi" class="form-control" rows="3" placeholder="Ví dụ: Bận ca làm khác đột xuất, có việc gia đình, không kịp thời gian chuẩn bị..." required></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('reject-modal')">Hủy Bỏ</button>
+        <button type="submit" class="btn btn-danger">Xác Nhận Từ Chối</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

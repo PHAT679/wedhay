@@ -1,0 +1,65 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}{{ title }} - Emmay Beauty{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 650px; margin: 0 auto;">
+  <div style="margin-bottom: 20px;">
+    <a href="{% url 'owner:services_list' %}" style="font-size: 13px; color: var(--text-muted);">&larr; Quay lại danh sách dịch vụ</a>
+  </div>
+
+  <div class="card" style="padding: 32px; border-radius: var(--radius-lg);">
+    <h3 class="card-title" style="margin-bottom: 20px;">{{ title }}</h3>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Tên dịch vụ -->
+      <div class="form-group">
+        <label class="form-label">Tên dịch vụ nail *</label>
+        {{ form.ten_dich_vu }}
+        {% if form.ten_dich_vu.errors %}
+          <span style="color: #C62828; font-size: 12px;">{{ form.ten_dich_vu.errors.0 }}</span>
+        {% endif %}
+        <small style="color: var(--text-muted); font-size: 11.5px;">Tên dịch vụ là duy nhất, không được trùng lặp.</small>
+      </div>
+
+      <!-- Giá tiền & Thời lượng -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="form-group">
+          <label class="form-label">Giá tiền (VNĐ) *</label>
+          {{ form.gia_tien }}
+          {% if form.gia_tien.errors %}
+            <span style="color: #C62828; font-size: 12px;">{{ form.gia_tien.errors.0 }}</span>
+          {% endif %}
+          <small style="color: var(--text-muted); font-size: 11.5px;">Số nguyên dương > 0.</small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Thời lượng thực hiện *</label>
+          {{ form.thoi_luong }}
+          {% if form.thoi_luong.errors %}
+            <span style="color: #C62828; font-size: 12px;">{{ form.thoi_luong.errors.0 }}</span>
+          {% endif %}
+          <small style="color: var(--text-muted); font-size: 11.5px;">Bội số của 30 phút theo SRS (30 - 180p).</small>
+        </div>
+      </div>
+
+      <!-- Ghi chú -->
+      <div class="form-group">
+        <label class="form-label">Ghi chú chi tiết các bước (tùy chọn)</label>
+        {{ form.ghi_chu }}
+        {% if form.ghi_chu.errors %}
+          <span style="color: #C62828; font-size: 12px;">{{ form.ghi_chu.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <div style="border-top: 1px solid var(--border-pink); padding-top: 20px; display: flex; justify-content: flex-end; gap: 12px;">
+        <a href="{% url 'owner:services_list' %}" class="btn btn-secondary">Hủy Bỏ</a>
+        <button type="submit" class="btn btn-primary">Lưu Dịch Vụ</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

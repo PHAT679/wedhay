@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #FFF9F8;
+    color: #343039;
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  h1, h2, h3, .font-serif-luxury {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+}
+
+/* Custom soft pink scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FBECEF;
+}
+::-webkit-scrollbar-thumb {
+  background: #D98F9F;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C97F8E;
+}

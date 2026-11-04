@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Thông Báo Hệ Thống - Emmay Beauty{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+    <div>
+      <h1 style="font-size: 28px; color: var(--dark-rose);">Thông Báo Hệ Thống</h1>
+      <p style="color: var(--text-muted); font-size: 13.5px;">Cập nhật lịch hẹn, phân công và hoạt động mới nhất</p>
+    </div>
+    <div>
+      <a href="{% url 'notifications:mark_all_read' %}" class="btn btn-secondary btn-sm">
+        Đánh Dấu Tất Cả Đã Đọc
+      </a>
+    </div>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <ul style="list-style: none; padding: 0; margin: 0;">
+      {% for n in notifications %}
+        <li style="border-bottom: 1px solid var(--border-pink); padding: 18px 22px; background: {% if not n.da_doc %}#FFF7F9{% else %}#FFFFFF{% endif %}; display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+              <span class="badge" style="background: var(--light-pink); color: var(--dark-rose); font-size: 11px;">
+                {{ n.loai_thong_bao }}
+              </span>
+              <strong style="font-size: 14.5px; color: var(--text-main);">{{ n.tieu_de }}</strong>
+              {% if not n.da_doc %}
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #E53935; display: inline-block;"></span>
+              {% endif %}
+            </div>
+            <p style="color: var(--text-muted); font-size: 13.5px; margin-bottom: 6px; line-height: 1.5;">
+              {{ n.noi_dung }}
+            </p>
+            <div style="font-size: 11.5px; color: #A89B9F;">
+              {{ n.thoi_diem_tao|date:"H:i - d/m/Y" }} ({{ n.thoi_diem_tao|timesince }} trước)
+            </div>
+          </div>
+
+          <div>
+            {% if n.lien_ket %}
+              <a href="{% url 'notifications:mark_read' n.pk %}" class="btn btn-primary btn-sm">
+                Xem Chi Tiết &rarr;
+              </a>
+            {% endif %}
+          </div>
+        </li>
+      {% empty %}
+        <li style="text-align: center; padding: 50px 20px; color: var(--text-muted);">
+          Bạn chưa có thông báo nào.
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

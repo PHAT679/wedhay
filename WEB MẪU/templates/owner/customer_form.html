@@ -1,0 +1,61 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}{{ title }} - Emmay Beauty{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+  <div style="margin-bottom: 20px;">
+    <a href="{% url 'owner:customers_list' %}" style="font-size: 13px; color: var(--text-muted);">&larr; Quay lại danh sách khách hàng</a>
+  </div>
+
+  <div class="card" style="padding: 32px; border-radius: var(--radius-lg);">
+    <h3 class="card-title" style="margin-bottom: 20px;">{{ title }}</h3>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Họ tên -->
+      <div class="form-group">
+        <label class="form-label">Họ và tên khách hàng *</label>
+        {{ form.ho_ten }}
+        {% if form.ho_ten.errors %}
+          <span style="color: #C62828; font-size: 12px;">{{ form.ho_ten.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Số điện thoại -->
+      <div class="form-group">
+        <label class="form-label">Số điện thoại (đúng 10 chữ số) *</label>
+        {{ form.so_dien_thoai }}
+        {% if form.so_dien_thoai.errors %}
+          <span style="color: #C62828; font-size: 12px;">{{ form.so_dien_thoai.errors.0 }}</span>
+        {% endif %}
+        <small style="color: var(--text-muted); font-size: 11.5px;">Bắt buộc đúng 10 số per BR-UC6-03.</small>
+      </div>
+
+      <!-- Facebook & Zalo -->
+      <div class="form-group">
+        <label class="form-label">Link trang Facebook (nếu có)</label>
+        {{ form.link_facebook }}
+        {% if form.link_facebook.errors %}
+          <span style="color: #C62828; font-size: 12px;">{{ form.link_facebook.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Link hoặc SĐT Zalo (nếu có)</label>
+        {{ form.link_zalo }}
+        {% if form.link_zalo.errors %}
+          <span style="color: #C62828; font-size: 12px;">{{ form.link_zalo.errors.0 }}</span>
+        {% endif %}
+      </div>
+
+      <div style="border-top: 1px solid var(--border-pink); padding-top: 20px; display: flex; justify-content: flex-end; gap: 12px;">
+        <a href="{% url 'owner:customers_list' %}" class="btn btn-secondary">Hủy Bỏ</a>
+        <button type="submit" class="btn btn-primary">Lưu Thông Tin</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

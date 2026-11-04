@@ -1,0 +1,448 @@
+/* ==========================================================================
+   EMMAY BEAUTY - DASHBOARD & WORKFLOW STYLING
+   Owner & Employee Portal
+   ========================================================================== */
+
+body.app-layout {
+  display: flex !important;
+  flex-direction: row !important;
+  min-height: 100vh;
+  background-color: #FAF4F5;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  background: #FFFFFF;
+  border-right: 1.5px solid var(--border-pink);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  z-index: 100;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.sidebar-brand {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--border-pink);
+  text-align: center;
+}
+
+.sidebar-logo {
+  height: 52px;
+  width: auto;
+  max-width: 100%;
+}
+
+.sidebar-nav {
+  padding: 20px 12px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.nav-item a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 16px;
+  color: #5C5257;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 13.5px;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+}
+
+.nav-item a:hover {
+  background: var(--light-pink);
+  color: var(--dark-rose);
+}
+
+.nav-item.active a {
+  background: var(--soft-pink);
+  color: var(--dark-rose);
+  font-weight: 600;
+  border-left: 4px solid var(--btn-rose);
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-rose);
+}
+
+.sidebar-footer {
+  padding: 18px 20px;
+  border-top: 1px solid var(--border-pink);
+  background: var(--ivory-white);
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--blush-pink);
+  color: var(--dark-rose);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid var(--border-pink);
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text-main);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.user-role {
+  font-size: 11.5px;
+  color: var(--primary-rose);
+}
+
+/* Main Content Area */
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: calc(100% - 260px);
+  background-color: #FAF4F5;
+  min-height: 100vh;
+}
+
+/* Header */
+.top-header {
+  height: 68px;
+  background: #FFFFFF;
+  border-bottom: 1.5px solid var(--border-pink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.header-title h2 {
+  font-size: 20px;
+  color: var(--dark-rose);
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Notification Bell Dropdown */
+.notification-bell-container {
+  position: relative;
+}
+
+.bell-btn {
+  background: var(--light-pink);
+  border: 1px solid var(--border-pink);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--dark-rose);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.bell-btn:hover {
+  background: var(--soft-pink);
+}
+
+.bell-counter {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #E53935;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FFFFFF;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 340px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-pink);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  z-index: 200;
+  animation: slideDown 0.2s ease;
+}
+
+.notification-dropdown.active {
+  display: block;
+}
+
+.notif-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-pink);
+  font-weight: 600;
+  color: var(--dark-rose);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notif-list {
+  max-height: 320px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.notif-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #F6EAEF;
+  transition: background 0.2s ease;
+}
+
+.notif-item:hover {
+  background: var(--light-pink);
+}
+
+.notif-item.unread {
+  background: #FFF7F9;
+  border-left: 3px solid var(--btn-rose);
+}
+
+.notif-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.notif-time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Page Body */
+.page-container {
+  padding: 28px 30px;
+  flex: 1;
+}
+
+/* Stat Cards */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-pink);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-md);
+  background: var(--soft-pink);
+  color: var(--dark-rose);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+  font-family: var(--font-body);
+}
+
+.stat-label {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Timeline View (UC 3.1) */
+.timeline-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-pink);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 28px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.date-selector-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timeline-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.slot-box {
+  padding: 12px 10px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-pink);
+  background: #FFFFFF;
+  text-align: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.slot-box.has-booking {
+  background: #FFF2F5;
+  border-color: var(--btn-rose);
+  cursor: pointer;
+}
+
+.slot-box.has-booking:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.slot-time {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--dark-rose);
+  margin-bottom: 4px;
+}
+
+.slot-status-text {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Responsive Dashboard */
+@media (max-width: 900px) {
+  body.app-layout {
+    flex-direction: column !important;
+  }
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1.5px solid var(--border-pink);
+  }
+  .sidebar-brand {
+    padding: 16px 20px;
+  }
+  .sidebar-logo {
+    height: 42px;
+  }
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 10px 14px;
+    gap: 8px;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-item a {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .sidebar-footer {
+    display: none;
+  }
+  .main-wrapper {
+    width: 100%;
+    min-height: auto;
+  }
+  .top-header {
+    height: 60px;
+    padding: 0 16px;
+  }
+  .header-title h2 {
+    font-size: 16px;
+  }
+  .page-container {
+    padding: 20px 16px;
+  }
+}

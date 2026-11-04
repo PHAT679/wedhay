@@ -1,0 +1,80 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Quản Lý Khách Hàng - Emmay Beauty{% endblock %}
+{% block page_title %}Danh Sách & Tìm Kiếm Khách Hàng (UC 6.1){% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 14px;">
+  <!-- Search by name or 10-digit phone number -->
+  <form method="get" style="display: flex; gap: 10px; max-width: 420px; width: 100%;">
+    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Tìm theo tên hoặc số điện thoại (10 số)...">
+    <button type="submit" class="btn btn-secondary">Tìm</button>
+    {% if query %}
+      <a href="{% url 'owner:customers_list' %}" class="btn btn-outline">Hủy Lọc</a>
+    {% endif %}
+  </form>
+
+  <a href="{% url 'owner:customer_create' %}" class="btn btn-primary">
+    <span>+ Thêm Khách Hàng Mới</span>
+  </a>
+</div>
+
+<!-- Customer Table -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div class="table-responsive" style="border: none;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã KH</th>
+          <th>Họ Và Tên</th>
+          <th>Số Điện Thoại</th>
+          <th>Liên Kết Mạng Xã Hội</th>
+          <th>Tổng Số Lịch Đặt</th>
+          <th style="text-align: right;">Thao Tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in customers %}
+          <tr>
+            <td><strong style="color: var(--dark-rose);">{{ c.ma_khach_hang }}</strong></td>
+            <td><strong style="font-size: 14px;">{{ c.ho_ten }}</strong></td>
+            <td>
+              <span style="font-family: monospace; font-size: 13.5px; font-weight: 600;">{{ c.so_dien_thoai }}</span>
+            </td>
+            <td>
+              <div style="display: flex; gap: 10px; font-size: 13px;">
+                {% if c.link_facebook %}
+                  <a href="{{ c.link_facebook }}" target="_blank" style="color: #1877F2;">Facebook</a>
+                {% endif %}
+                {% if c.link_zalo %}
+                  <a href="https://zalo.me/{{ c.link_zalo }}" target="_blank" style="color: #0068FF;">Zalo</a>
+                {% endif %}
+                {% if not c.link_facebook and not c.link_zalo %}
+                  <span style="color: var(--text-muted);">&mdash;</span>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <span class="badge" style="background: var(--light-pink); color: var(--dark-rose); font-size: 12.5px;">
+                {{ c.lich_hen.count }} lịch hẹn
+              </span>
+            </td>
+            <td style="text-align: right;">
+              <div style="display: inline-flex; gap: 8px;">
+                <a href="{% url 'owner:customer_detail' c.pk %}" class="btn btn-secondary btn-sm">Lịch Sử</a>
+                <a href="{% url 'owner:customer_update' c.pk %}" class="btn btn-outline btn-sm">Sửa</a>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              Không tìm thấy khách hàng nào.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

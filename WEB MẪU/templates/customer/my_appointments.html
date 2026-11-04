@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Lịch Hẹn Của Tôi - Emmay Beauty{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 40px auto; padding: 0 20px;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+    <div>
+      <h1 style="font-size: 28px; color: var(--dark-rose);">Lịch Hẹn Của Tôi</h1>
+      <p style="color: var(--text-muted); font-size: 13.5px;">Quản lý và theo dõi trạng thái các lịch làm móng tại Emmay Beauty</p>
+    </div>
+    <a href="{% url 'customer:booking' %}" class="btn btn-primary">
+      <span>+ Đặt Lịch Hẹn Mới</span>
+    </a>
+  </div>
+
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <div class="table-responsive" style="border: none;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mã Lịch</th>
+            <th>Thời Gian Hẹn</th>
+            <th>Dịch Vụ Đặt</th>
+            <th>Tổng Tiền</th>
+            <th>Trạng Thái</th>
+            <th style="text-align: right;">Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in appointments %}
+            <tr>
+              <td><strong style="color: var(--dark-rose);">{{ a.ma_lich_hen }}</strong></td>
+              <td>
+                <div style="font-weight: 600;">{{ a.ngay_gio_bat_dau|date:"H:i" }}</div>
+                <div style="font-size: 12px; color: var(--text-muted);">{{ a.ngay_gio_bat_dau|date:"d/m/Y" }}</div>
+              </td>
+              <td>
+                <div style="font-size: 13.5px;">
+                  {% for ct in a.chi_tiet.all %}
+                    <div>• {{ ct.ten_dich_vu_dat }} ({{ ct.thoi_luong_dat }}p)</div>
+                  {% endfor %}
+                </div>
+              </td>
+              <td>
+                <strong style="font-family: var(--font-body); font-weight: 700; color: var(--deep-rose);">
+                  {{ a.tong_tien|floatformat:0 }} đ
+                </strong>
+              </td>
+              <td>
+                {% if a.trang_thai == 'Chờ xác nhận' %}
+                  <span class="badge badge-pending">Chờ xác nhận</span>
+                {% elif a.trang_thai == 'Đã xác nhận' %}
+                  <span class="badge badge-confirmed">Đã xác nhận</span>
+                {% elif a.trang_thai == 'Hoàn thành' %}
+                  <span class="badge badge-completed">Hoàn thành</span>
+                {% elif a.trang_thai == 'Hủy' %}
+                  <span class="badge badge-canceled">Đã hủy</span>
+                {% else %}
+                  <span class="badge badge-noshow">{{ a.trang_thai }}</span>
+                {% endif %}
+              </td>
+              <td style="text-align: right;">
+                {% if a.can_cancel %}
+                  <div style="display: inline-flex; gap: 8px;">
+                    <a href="{% url 'customer:reschedule' a.pk %}" class="btn btn-secondary btn-sm" title="Đổi ngày giờ hẹn">
+                      Đổi Lịch
+                    </a>
+                    <a href="{% url 'customer:cancel' a.pk %}" class="btn btn-outline btn-sm" style="color: #C62828 !important; border-color: #EF9A9A;" title="Hủy lịch hẹn">
+                      Hủy Lịch
+                    </a>
+                  </div>
+                {% else %}
+                  <span style="font-size: 12px; color: var(--text-muted);">&mdash;</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                Quý khách chưa có lịch hẹn nào tại Emmay Beauty.
+                <div style="margin-top: 14px;">
+                  <a href="{% url 'customer:booking' %}" class="btn btn-primary btn-sm">Đặt lịch ngay hôm nay</a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

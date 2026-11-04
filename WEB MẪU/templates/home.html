@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Emmay Beauty - Tiệm Nail Đặt Lịch Trực Tuyến Đà Nẵng{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-content">
+    <div class="hero-subtitle">Emmay Beauty Nail Salon • Đà Nẵng</div>
+    <h1 class="hero-title">Nâng Niu Từng Nét Đẹp Đôi Bàn Tay Bạn</h1>
+    <p class="hero-desc">
+      Hệ thống đặt lịch làm móng trực tuyến chuyên nghiệp. Trải nghiệm dịch vụ chăm sóc móng cao cấp, thiết kế Nail Art thạch pastel, đính đá sang trọng trong không gian thư giãn tinh tế.
+    </p>
+    <div class="hero-actions">
+      <a href="{% url 'customer:booking' %}" class="btn btn-primary btn-lg">
+        <span>Đặt Lịch Làm Móng Ngay</span>
+        <span>&rarr;</span>
+      </a>
+      <a href="{% url 'services:public_list' %}" class="btn btn-secondary btn-lg">
+        <span>Xem Bảng Giá Dịch Vụ</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Salon Values / Features -->
+<div style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;">
+    <div class="card" style="text-align: center; border-radius: var(--radius-lg);">
+      <div style="font-size: 36px; margin-bottom: 12px;">🌸</div>
+      <h3 style="font-size: 18px; margin-bottom: 8px;">Thiết Kế Độc Quyền</h3>
+      <p style="color: var(--text-muted); font-size: 13.5px;">Cập nhật liên tục các xu hướng nail Hàn - Nhật, ombre thạch hồng, vẽ hoa nổi 3D sang chảnh.</p>
+    </div>
+    <div class="card" style="text-align: center; border-radius: var(--radius-lg);">
+      <div style="font-size: 36px; margin-bottom: 12px;">💅</div>
+      <h3 style="font-size: 18px; margin-bottom: 8px;">Sơn Gel Nhập Khẩu</h3>
+      <p style="color: var(--text-muted); font-size: 13.5px;">100% dòng sơn chính hãng bền màu 3-4 tuần, nước bóng mịn không hại móng tự nhiên.</p>
+    </div>
+    <div class="card" style="text-align: center; border-radius: var(--radius-lg);">
+      <div style="font-size: 36px; margin-bottom: 12px;">⏰</div>
+      <h3 style="font-size: 18px; margin-bottom: 8px;">Đặt Lịch Thông Minh</h3>
+      <p style="color: var(--text-muted); font-size: 13.5px;">Khung giờ 30 phút chuẩn xác, xác nhận tức thì, không mất thời gian chờ đợi tại tiệm.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Featured Services (UC8 Preview) -->
+<section style="max-width: 1200px; margin: 50px auto; padding: 0 20px;">
+  <div style="text-align: center; margin-bottom: 36px;">
+    <span style="color: var(--dark-rose); font-size: 13px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">Bảng Dịch Vụ Nổi Bật</span>
+    <h2 class="section-heading" style="font-size: 32px; margin-top: 6px;">Trải Nghiệm Dịch Vụ Tại Emmay Beauty</h2>
+  </div>
+
+  <div class="services-grid">
+    {% for s in services %}
+      <div class="service-card">
+        <div class="service-card-header">
+          <h3 class="service-title">{{ s.ten_dich_vu }}</h3>
+          <p class="service-desc">{{ s.ghi_chu|default:"Dịch vụ chăm sóc móng chất lượng cao với sản phẩm chuẩn Hàn Quốc." }}</p>
+        </div>
+        <div class="service-meta">
+          <div>
+            <span class="service-price">{{ s.gia_tien|floatformat:0 }} đ</span>
+          </div>
+          <span class="service-duration">⏱ {{ s.thoi_luong }} phút</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div style="text-align: center; margin-top: 36px;">
+    <a href="{% url 'services:public_list' %}" class="btn btn-outline">Xem Tất Cả {{ services.count }}+ Dịch Vụ & Bảng Giá Chi Tiết</a>
+  </div>
+</section>
+
+<!-- Location & Store Info -->
+<section style="background: var(--light-pink); border-top: 1px solid var(--border-pink); border-bottom: 1px solid var(--border-pink); padding: 50px 20px;">
+  <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 30px;">
+    <div style="max-width: 580px;">
+      <h2 class="section-heading" style="font-size: 28px; margin-bottom: 16px;">Ghé Thăm Tiệm Nail Emmay Beauty</h2>
+      <p style="color: var(--text-muted); font-size: 14.5px; margin-bottom: 20px; line-height: 1.7;">
+        Tọa lạc tại con phố Hoàng Diệu trung tâm thành phố Đà Nẵng, Emmay Beauty mang đến không gian thư giãn yên tĩnh, ấm cúng với gam màu hồng phấn nữ tính. Đội ngũ kỹ thuật viên luôn sẵn sàng đón tiếp quý khách!
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px;">
+        <div>📍 <strong>Địa chỉ:</strong> {{ salon_address }}</div>
+        <div>📞 <strong>Hotline:</strong> {{ salon_hotline }}</div>
+        <div>⏰ <strong>Giờ mở cửa:</strong> {{ salon_hours }}</div>
+      </div>
+    </div>
+    <div style="text-align: center;">
+      <a href="{% url 'customer:booking' %}" class="btn btn-primary btn-lg" style="padding: 16px 36px; font-size: 16px;">
+        Đặt Lịch Hẹn Ngay Hôm Nay
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
