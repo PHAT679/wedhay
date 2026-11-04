@@ -1,3 +1,0 @@
-.env
-.azure/*
-!.azure/deployment-plan.md
