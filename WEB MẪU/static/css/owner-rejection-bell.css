@@ -1,3 +1,0 @@
-@keyframes owner-rejection-badge-shake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-3px); } 40% { transform:translateX(3px); } 60% { transform:translateX(-2px); } 80% { transform:translateX(2px); } }
-.bell-btn.owner-rejection-ring .bell-counter { animation:owner-rejection-badge-shake .5s ease-in-out; }
-@media (prefers-reduced-motion:reduce) { .bell-btn.owner-rejection-ring .bell-counter { animation:none; } }
