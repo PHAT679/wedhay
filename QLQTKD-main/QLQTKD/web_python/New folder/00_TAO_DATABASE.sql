@@ -1,7 +1,0 @@
-﻿USE master;
-GO
-IF DB_ID(N'MY_DUE_QLSK') IS NULL
-    CREATE DATABASE MY_DUE_QLSK;
-GO
-SELECT name FROM sys.databases WHERE name=N'MY_DUE_QLSK';
-GO
