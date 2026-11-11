@@ -1,0 +1,35 @@
+.owner-timeline .page-container { padding:18px 26px 24px; }
+.tracking-tabs { display:flex; flex-wrap:wrap; gap:12px; }
+.tracking-tab { display:inline-flex; align-items:center; gap:12px; min-height:48px; min-width:160px; padding:0 16px; border:1px solid #efdce4; border-radius:10px; background:#fff; color:#b34d73; font-size:13px; font-weight:700; text-decoration:none; }
+.tracking-tab svg,.tracking-empty svg { width:17px; height:17px; flex:none; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.tracking-tab.active { background:#d98ba3; color:#fff; }
+.tracking-filter { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:14px 0 8px 22px; color:#ad4d71; font-size:13px; font-weight:700; }
+.tracking-filter input { width:185px; height:44px; padding:0 12px; border:1px solid #efd2dc; border-radius:9px; background:#fff; color:#253047; font:inherit; font-weight:400; }
+.tracking-filter input::-webkit-calendar-picker-indicator { cursor:pointer; }
+.tracking-panel { padding:12px 16px 14px; border:1px solid #efd2dc; border-radius:16px; background:#fff; }
+.tracking-panel h1 { padding:12px 22px; border-radius:10px; background:#fff0f5; color:#ad4d71; font-size:16px; font-weight:700; }
+.tracking-rows { display:flex; flex-direction:column; gap:7px; padding-top:8px; }
+.tracking-row { display:flex; gap:12px; min-width:0; }
+.tracking-time { display:grid; place-items:center; flex:0 0 120px; min-height:46px; border-radius:9px; background:#fdf3f7; color:#ad4d71; font-size:13px; font-weight:700; }
+.tracking-appointments { display:flex; flex:1; gap:10px; min-width:0; }
+.tracking-appointment { display:flex; flex:1 1 0; flex-wrap:wrap; box-sizing:border-box; align-items:center; gap:14px; width:100%; min-width:0; min-height:46px; padding:6px 14px; border:1px solid #efd2dc; border-radius:9px; background:#fff; color:#253047; text-decoration:none; overflow-wrap:anywhere; }
+.tracking-code { display:flex; align-items:center; align-self:stretch; flex:0 1 auto; min-width:0; padding-right:14px; border-right:1px solid #efdce4; color:#ad4d71; font-size:12px; overflow-wrap:anywhere; }
+.tracking-info { display:flex; flex:1 1 100px; flex-direction:column; gap:3px; min-width:0; font-size:12px; overflow-wrap:anywhere; }
+.tracking-info strong { color:#30313b; font-weight:700; }
+.tracking-info small { color:#858a9a; font-size:11px; }
+.tracking-status { flex:0 1 auto; min-width:0; max-width:100%; padding:5px 12px; border-radius:20px; background:#f3f3f4; font-size:10px; font-weight:700; text-align:center; overflow-wrap:anywhere; }
+.tracking-status.pending { background:#fff0d6; color:#ab6900; }.tracking-status.confirmed { background:#e5f4ea; color:#288856; }.tracking-status.canceled { background:#fbe6ed; color:#b34870; }
+.tracking-empty { display:flex; align-items:center; justify-content:center; gap:18px; flex:1; min-height:46px; border:1px dashed #efdce4; border-radius:9px; color:#b5a8ad; font-size:12px; font-style:italic; }
+.tracking-pagination { display:flex; justify-content:flex-end; gap:16px; margin:12px 24px 0; color:#b4aab0; font-weight:700; }
+.tracking-pagination a { color:#d98ba3; }.tracking-pagination .current { color:#253047; text-decoration:underline; }
+.tracking-panel-empty { padding:22px 30px 40px; }
+.tracking-panel-empty h1 { padding:14px 8px 24px; background:transparent; }
+.tracking-day-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:460px; padding:24px; border:1px solid #efdce4; border-radius:12px; text-align:center; }
+.tracking-day-empty-icon { display:grid; place-items:center; width:108px; height:108px; border-radius:50%; background:#fff0f5; color:#d98ba3; }
+.tracking-day-empty-icon svg { width:54px; height:54px; fill:none; stroke:currentColor; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+.tracking-day-empty h2 { margin-top:8px; color:#ad4d71; font-size:20px; font-weight:700; }
+.tracking-day-empty p { margin-top:12px; color:#858a9a; font-size:13px; }
+.tracking-day-error form { margin-top:24px; }
+.tracking-day-error button { min-width:150px; min-height:44px; padding:10px 20px; border:0; border-radius:9px; background:#d98ba3; color:#fff; font-weight:700; cursor:pointer; }
+.tracking-day-error button:disabled { opacity:.65; cursor:wait; }
+@media(max-width:700px) { .owner-timeline .page-container { padding:20px 12px; }.tracking-filter { margin-left:0; }.tracking-time { flex-basis:70px; }.tracking-appointment { flex-wrap:wrap; }.tracking-status { margin-left:auto; } }

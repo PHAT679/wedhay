@@ -1,0 +1,35 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Lịch Phân Công - Kỹ Thuật Viên {{ nhan_vien.ten_nhan_vien }}{% endblock %}
+{% block page_title %}Lịch hẹn được phân công{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/employee-appointments.css?v=employee-row-height-20261111">{% endblock %}
+
+{% block content %}
+<form method="get" class="employee-filter">
+  <label class="employee-date-control" for="employee-date">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6M17 2v6M3 10h18"/></svg>
+    {% if selected_date == today %}<span>Hôm nay –</span>{% endif %}
+    <input id="employee-date" aria-label="Chọn ngày hẹn" type="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" onchange="this.form.submit()">
+    <svg class="employee-date-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+  </label>
+  <button type="submit">Xem</button>
+</form>
+{% if assignments %}
+<div class="employee-table-wrap"><table class="employee-table">
+<thead><tr><th>Mã lịch</th><th>Khách hàng &amp; SĐT</th><th>Thời gian phục vụ</th><th>Dịch vụ cần làm</th><th>Trạng thái tiếp nhận</th><th>Thao tác</th></tr></thead>
+<tbody>{% for pc in assignments %}<tr class="employee-appointment-row">
+<td><strong class="employee-rose">{{ pc.lich_hen.ma_lich_hen }}</strong></td>
+<td><strong>{{ pc.lich_hen.ten_lien_he }}</strong><small>{{ pc.lich_hen.so_dien_thoai_lien_he }}</small></td>
+<td><strong class="employee-rose">{{ pc.lich_hen.ngay_gio_bat_dau|date:"H:i" }} – {{ pc.lich_hen.ngay_gio_ket_thuc|date:"H:i" }}</strong><small>{{ pc.lich_hen.ngay_gio_bat_dau|date:"d/m/Y" }}</small></td>
+<td>{% for ct in pc.lich_hen.chi_tiet.all %}<div>{{ ct.ten_dich_vu_dat }} ({{ ct.thoi_luong_dat }}p)</div>{% endfor %}</td>
+<td>{% if pc.lich_hen.trang_thai == 'Hủy' %}<span class="employee-status canceled">Đã hủy</span>{% elif pc.trang_thai_tiep_nhan == 'Từ chối' %}<span class="employee-status canceled">Đã từ chối</span>{% elif pc.trang_thai_tiep_nhan == 'Đã tiếp nhận' %}<span class="employee-status confirmed">Đã xác nhận</span>{% elif pc.trang_thai_tiep_nhan == 'Chờ phản hồi' %}<span class="employee-status pending">Chờ xác nhận</span>{% else %}—{% endif %}</td>
+<td><a class="employee-button" href="{% url 'employee:appointment_detail' pc.lich_hen.pk %}?{% if selected_date %}date={{ selected_date|date:'Y-m-d' }}&amp;{% endif %}page={{ page_obj.number }}">Xem chi tiết</a></td>
+</tr>{% endfor %}</tbody></table></div>
+<nav class="employee-pagination" aria-label="Phân trang lịch hẹn">
+{% if page_obj.has_previous %}<a href="?{% if selected_date %}date={{ selected_date|date:'Y-m-d' }}&amp;{% endif %}page=1" aria-label="Trang đầu">«</a><a href="?{% if selected_date %}date={{ selected_date|date:'Y-m-d' }}&amp;{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Trang trước">‹</a>{% else %}<span aria-disabled="true" aria-label="Trang đầu">«</span><span aria-disabled="true" aria-label="Trang trước">‹</span>{% endif %}
+{% for number in page_range %}{% if number == page_obj.paginator.ELLIPSIS %}<span>…</span>{% elif number == page_obj.number %}<strong aria-current="page">{{ number }}</strong>{% else %}<a href="?{% if selected_date %}date={{ selected_date|date:'Y-m-d' }}&amp;{% endif %}page={{ number }}">{{ number }}</a>{% endif %}{% endfor %}
+{% if page_obj.has_next %}<a href="?{% if selected_date %}date={{ selected_date|date:'Y-m-d' }}&amp;{% endif %}page={{ page_obj.next_page_number }}" aria-label="Trang sau">›</a><a href="?{% if selected_date %}date={{ selected_date|date:'Y-m-d' }}&amp;{% endif %}page={{ page_obj.paginator.num_pages }}" aria-label="Trang cuối">»</a>{% else %}<span aria-disabled="true" aria-label="Trang sau">›</span><span aria-disabled="true" aria-label="Trang cuối">»</span>{% endif %}</nav>
+{% else %}
+<div class="employee-empty"><div class="employee-empty-icon" aria-hidden="true"><svg viewBox="0 0 120 120"><rect x="18" y="24" width="84" height="78" rx="10" fill="white" stroke="#d98ba3" stroke-width="2"/><path d="M18 46h84M35 19v18M85 19v18" fill="none" stroke="#b45075" stroke-width="3"/><path d="M36 60h7v7h-7zm20 0h7v7h-7zm20 0h7v7h-7zm-40 16h7v7h-7zm20 0h7v7h-7z" fill="#f5d7e1"/><circle cx="93" cy="95" r="18" fill="#fbe7ee" stroke="#d98ba3"/><path d="m86 88 14 14m0-14-14 14" stroke="#b45075" stroke-width="3"/></svg></div><h2>Chưa có lịch hẹn được phân công trong ngày này</h2></div>
+{% endif %}
+{% endblock %}

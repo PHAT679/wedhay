@@ -1,0 +1,3 @@
+.service-edit-price-invalid input { border:2px solid #ff1744; }
+.service-edit-price-error { display:block; margin-top:6px; color:#ff1744; font-size:12px; font-weight:700; }
+.service-edit-price-error[hidden] { display:none; }

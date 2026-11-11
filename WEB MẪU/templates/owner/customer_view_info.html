@@ -1,0 +1,33 @@
+{% extends 'owner/overview.html' %}
+{% block title %}Xem thông tin khách hàng - Emmay Beauty{% endblock %}
+{% block page_title %}Xem thông tin khách hàng{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/owner-overview.css">
+<style>
+.customer-view { box-sizing:border-box; width:100%; max-width:1092px; margin:0 auto; padding:20px 24px; color:#39343a; }
+.customer-view-back { color:#a74d6a; font-weight:700; text-decoration:none; }
+.customer-view-card { margin-top:20px; padding:24px 28px; border:1px solid #efd8df; border-radius:16px; background:#fff; }
+.customer-view-card h1 { margin:0; padding-bottom:20px; border-bottom:1px solid #efdce4; color:#a74d6a; font-size:21px; }
+.customer-view-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px 28px; margin-top:20px; }
+.customer-view-label { display:block; margin-bottom:10px; font-weight:700; }
+.customer-view-value { min-height:52px; display:flex; align-items:center; box-sizing:border-box; padding:12px 16px; border:1px solid #efdce4; border-radius:9px; background:#faf5f7; overflow-wrap:anywhere; }
+.customer-view-related { margin-top:24px; }.customer-view-related h2 { margin:0 0 14px; color:#a74d6a; font-size:17px; }.customer-view-related .customer-view-value { min-height:52px; background:#fff8fa; }
+.customer-view-actions { display:flex; justify-content:flex-end; margin-top:24px; }.customer-view-actions a { display:inline-flex; align-items:center; justify-content:center; min-width:190px; min-height:48px; border-radius:8px; background:#d98ba3; color:#fff; font-weight:700; text-decoration:none; }
+@media(max-width:700px) { .customer-view { padding:24px 16px; }.customer-view-card { padding:24px 20px; }.customer-view-grid { grid-template-columns:1fr; gap:22px; } }
+</style>
+{% endblock %}
+{% block content %}
+<div class="customer-view">
+  <a class="customer-view-back" href="{% url 'owner:customers_list' %}">‹ Quay lại danh sách khách hàng</a>
+  <section class="customer-view-card"><h1>THÔNG TIN CHI TIẾT KHÁCH HÀNG</h1>
+    <div class="customer-view-grid">
+      <div><span class="customer-view-label">Họ và tên</span><div class="customer-view-value">{{ customer.ho_ten }}</div></div>
+      <div><span class="customer-view-label">Số điện thoại</span><div class="customer-view-value">{{ customer.so_dien_thoai }}</div></div>
+      <div><span class="customer-view-label">Facebook / Zalo</span><div class="customer-view-value">{% if customer.link_facebook %}{{ customer.link_facebook }} (Facebook){% endif %}{% if customer.link_facebook and customer.link_zalo %}&nbsp; · &nbsp;{% endif %}{% if customer.link_zalo %}{{ customer.link_zalo }} (Zalo){% endif %}{% if not customer.link_facebook and not customer.link_zalo %}Chưa cập nhật{% endif %}</div></div>
+      <div><span class="customer-view-label">Dịch vụ đã chọn</span><div class="customer-view-value">{{ customer.dich_vu_truc_tiep.ten_dich_vu|default:'Chưa cập nhật' }}</div></div>
+    </div>
+    <div class="customer-view-related"><h2>Thông tin liên quan</h2><div class="customer-view-value">Khách hàng đã có hồ sơ trên hệ thống.</div></div>
+    <div class="customer-view-actions"><a href="{% url 'owner:customers_list' %}">Quay lại</a></div>
+  </section>
+</div>
+{% endblock %}

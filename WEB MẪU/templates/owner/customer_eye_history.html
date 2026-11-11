@@ -1,0 +1,80 @@
+{% extends 'owner/overview.html' %}
+{% block title %}Lịch sử đặt lịch của khách hàng - Emmay Beauty{% endblock %}
+{% block body_class %} owner-overview owner-customer-history{% endblock %}
+{% block page_title %}Lịch sử đặt lịch của khách hàng{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/owner-overview.css">
+<style>
+.owner-customer-history .page-container { padding:20px 16px; }
+.eye-history { box-sizing:border-box; width:100%; max-width:1092px; margin:0 auto; padding:0 16px; color:#3e3940; }
+.eye-history-back { color:#a74d6a; font-weight:700; text-decoration:none; }
+.eye-history-profile,.eye-history-table { border:1px solid #efd8df; border-radius:16px; background:#fff; }
+.eye-history-profile { display:flex; align-items:center; gap:12px; padding:8px 16px; margin:14px 0 14px; }
+.eye-history-avatar { display:grid; place-items:center; flex:none; width:50px; height:50px; border-radius:50%; background:#f4dce5; color:#a74d6a; font-size:24px; }
+.eye-history-person { flex:1; min-width:0; }.eye-history-person h2 { margin:0 0 2px; font-size:18px; }.eye-history-person p { margin:1px 0; font-size:0.875em; line-height:1.3; color:#746a70; overflow-wrap:anywhere; }
+.eye-history-count { min-width:150px; padding:8px 12px; border-radius:12px; background:#fff0f4; text-align:center; color:#a74d6a; font-weight:700; }.eye-history-count strong { display:block; margin-top:4px; font-size:26px; }
+.eye-history table { width:100%; table-layout:fixed; border-collapse:collapse; font-size:13px; }.eye-history th { background:#fbf0f4; text-align:left; }.eye-history th,.eye-history td { padding:8px 10px; overflow-wrap:anywhere; vertical-align:middle; }.eye-history tbody tr:nth-child(odd) { background:#faf5f7; }
+.eye-history-table { min-height:315px; }
+.eye-history-table tbody td { padding-top:13px; padding-bottom:13px; }
+.eye-history-table th { box-sizing:border-box; }
+.eye-history-table th:nth-child(1) { width:5%; }.eye-history-table th:nth-child(2) { width:16%; }.eye-history-table th:nth-child(3) { width:34%; }.eye-history-table th:nth-child(4) { width:14%; }.eye-history-table th:nth-child(5) { width:21%; }.eye-history-table th:nth-child(6) { width:10%; }
+.eye-history-table th:nth-child(1), .eye-history-table td:nth-child(1), .eye-history-table th:nth-child(4), .eye-history-table td:nth-child(4), .eye-history-table th:nth-child(6), .eye-history-table td:nth-child(6) { text-align:center; }
+.eye-history-pagination { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:14px; margin:18px 20px 0; color:#a49ba1; font-weight:700; font-variant-numeric:tabular-nums; }.eye-history-pagination a { color:#d98ba3; text-decoration:none; }.eye-history-pagination [aria-current] { color:#30313b; text-decoration:underline; }.eye-history-pagination [aria-disabled] { color:#a49ba1; }
+.eye-history-badge { display:inline-flex; box-sizing:border-box; width:150px; max-width:100%; min-height:38px; align-items:center; justify-content:center; padding:9px 12px; border-radius:25px; text-align:center; background:#fff0d9; color:#a96d17; font-weight:700; }.eye-history-badge.completed { background:#e3f3e8; color:#277245; }.eye-history-badge.cancelled { background:#fbe4e9; color:#b12f50; }
+.eye-history-table .eye-history-badge { width:115px; min-height:30px; padding:5px 8px; font-size:12px; }
+.eye-history-detail { padding:0; border:0; background:none; color:#b45072; font-size:20px; cursor:pointer; }
+.eye-history-dialog { position:fixed; inset:0; margin:auto; width:min(560px,calc(100% - 32px)); max-height:calc(100dvh - 32px); padding:0; border:0; border-radius:16px; color:#3e3940; }
+.eye-history-dialog::backdrop { background:rgba(36,31,38,.35); }
+.eye-history-dialog-header { display:flex; align-items:center; justify-content:space-between; padding:20px 32px; border-radius:16px; background:#fff0f4; color:#a74d6a; }
+.eye-history-dialog-header h2 { margin:0; font-size:24px; }.eye-history-dialog-x { border:0; background:none; color:#a74d6a; font-size:24px; cursor:pointer; }
+.eye-history-dialog-content { padding:28px 36px 22px; }.eye-history-dialog-content dl { display:grid; grid-template-columns:minmax(120px, 40%) 1fr; gap:24px 12px; margin:0; }.eye-history-dialog-content dt { color:#756970; font-weight:700; }.eye-history-dialog-content dd { margin:0; overflow-wrap:anywhere; }
+.eye-history-dialog-actions { display:flex; justify-content:flex-end; margin-top:40px; }.eye-history-dialog-close { min-width:125px; padding:12px 20px; border:0; border-radius:8px; background:#d98ba3; color:white; font-weight:700; cursor:pointer; }
+@media(max-width:700px) { .eye-history { padding:24px 16px; }.eye-history-profile { flex-wrap:wrap; }.eye-history-count { width:100%; } }
+</style>
+{% endblock %}
+{% block content %}
+<div class="eye-history">
+  <a class="eye-history-back" href="{% url 'owner:customers_list' %}">‹ Quay lại danh sách khách hàng</a>
+  <section class="eye-history-profile">
+    <div class="eye-history-avatar" aria-hidden="true">♙</div>
+    <div class="eye-history-person"><h2>{{ customer.ho_ten }}</h2><p>{{ customer.so_dien_thoai }}</p>{% if customer.link_facebook %}<p>{{ customer.link_facebook }} (Facebook)</p>{% endif %}{% if customer.link_zalo %}<p>{{ customer.link_zalo }} (Zalo)</p>{% endif %}</div>
+    <div class="eye-history-count">Tổng số lần đặt lịch<strong>{{ appointments.paginator.count }}</strong></div>
+  </section>
+  <div class="eye-history-table"><table>
+    <thead><tr><th>STT</th><th>Ngày giờ hẹn</th><th>Dịch vụ đã đặt</th><th>Trạng thái</th><th>Ghi chú</th><th>Chi tiết</th></tr></thead>
+    <tbody>{% for appointment in appointments %}
+      <tr><td>{{ forloop.counter0|add:appointments.start_index }}</td><td>{{ appointment.ngay_gio_bat_dau|date:'d/m/Y H:i' }}</td><td>{% for item in appointment.chi_tiet.all %}{{ item.ten_dich_vu_dat }}{% if not forloop.last %}<br>{% endif %}{% empty %}—{% endfor %}</td>
+      <td><span class="eye-history-badge {% if appointment.trang_thai == 'Hoàn thành' %}completed{% elif appointment.trang_thai == 'Hủy' %}cancelled{% endif %}">{{ appointment.get_trang_thai_display }}</span></td>
+      <td>{% for item in appointment.chi_tiet.all %}{% if item.ghi_chu_thuc_hien %}<div>{{ item.ghi_chu_thuc_hien }}</div>{% endif %}{% endfor %}</td>
+      <td><button type="button" class="eye-history-detail" data-dialog="history-detail-{{ forloop.counter }}" aria-label="Xem chi tiết lịch {{ appointment.pk }}">▤</button></td></tr>
+    {% empty %}<tr><td colspan="6">Khách hàng chưa có lịch hẹn nào.</td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% if appointments.paginator.num_pages > 1 %}<nav class="eye-history-pagination" aria-label="Phân trang lịch hẹn">
+    {% if appointments.has_previous %}<a href="?display=history&amp;page=1" aria-label="Trang đầu">«</a><a href="?display=history&amp;page={{ appointments.previous_page_number }}" aria-label="Trang trước">‹</a>{% else %}<span aria-disabled="true">«</span><span aria-disabled="true">‹</span>{% endif %}
+    {% for number in page_range %}{% if number == appointments.paginator.ELLIPSIS %}<span>…</span>{% elif number == appointments.number %}<span aria-current="page">{{ number }}</span>{% else %}<a href="?display=history&amp;page={{ number }}">{{ number }}</a>{% endif %}{% endfor %}
+    {% if appointments.has_next %}<a href="?display=history&amp;page={{ appointments.next_page_number }}" aria-label="Trang sau">›</a><a href="?display=history&amp;page={{ appointments.paginator.num_pages }}" aria-label="Trang cuối">»</a>{% else %}<span aria-disabled="true">›</span><span aria-disabled="true">»</span>{% endif %}
+  </nav>{% endif %}
+  {% for appointment in appointments %}
+  <dialog class="eye-history-dialog" id="history-detail-{{ forloop.counter }}" aria-labelledby="history-title-{{ forloop.counter }}">
+    <div class="eye-history-dialog-header"><h2 id="history-title-{{ forloop.counter }}">Chi tiết lịch hẹn</h2><button class="eye-history-dialog-x" type="button" aria-label="Đóng">×</button></div>
+    <div class="eye-history-dialog-content"><dl>
+      <dt>Ngày giờ hẹn</dt><dd>{{ appointment.ngay_gio_bat_dau|date:'d/m/Y H:i' }}</dd>
+      <dt>Dịch vụ</dt><dd>{% for item in appointment.chi_tiet.all %}<div>{{ item.ten_dich_vu_dat }}</div>{% empty %}—{% endfor %}</dd>
+      <dt>Trạng thái</dt><dd><span class="eye-history-badge {% if appointment.trang_thai == 'Hoàn thành' %}completed{% elif appointment.trang_thai == 'Hủy' %}cancelled{% endif %}">{{ appointment.get_trang_thai_display }}</span></dd>
+      <dt>Ghi chú</dt><dd>{% for item in appointment.chi_tiet.all %}{% if item.ghi_chu_thuc_hien %}<div>{{ item.ghi_chu_thuc_hien }}</div>{% endif %}{% endfor %}</dd>
+      <dt>Khách hàng</dt><dd>{{ customer.ho_ten }}</dd>
+    </dl><div class="eye-history-dialog-actions"><button class="eye-history-dialog-close" type="button">Đóng</button></div></div>
+  </dialog>
+  {% endfor %}
+</div>
+<script>
+  document.querySelectorAll('.eye-history-detail').forEach((button) => {
+    button.addEventListener('click', () => document.getElementById(button.dataset.dialog).showModal());
+  });
+  document.querySelectorAll('.eye-history-dialog').forEach((dialog) => {
+    dialog.querySelectorAll('.eye-history-dialog-x, .eye-history-dialog-close').forEach((button) => {
+      button.addEventListener('click', () => dialog.close());
+    });
+  });
+</script>
+{% endblock %}

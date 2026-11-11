@@ -1,0 +1,40 @@
+{% extends 'owner/overview.html' %}
+{% block title %}Cập nhật trạng thái - Emmay Beauty{% endblock %}
+{% block body_class %} owner-overview owner-status-list{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/owner-overview.css"><link rel="stylesheet" href="/static/css/owner-status-list.css?v=rows-20261111">{% endblock %}
+{% block page_title %}Theo dõi lịch hẹn{% endblock %}
+{% block content %}
+<nav class="status-tabs" aria-label="Theo dõi lịch hẹn">
+  <a href="{% url 'owner:timeline' %}?date={{ selected_date|date:'Y-m-d' }}">▦ &nbsp; Timeline</a>
+  <a class="active" href="{% url 'owner:status_list' %}?date={{ selected_date|date:'Y-m-d' }}" aria-current="page">✎ &nbsp; Cập nhật trạng thái</a>
+</nav>
+<form class="status-date" method="get">
+  <label for="status-date-input">Chọn ngày:</label>
+  <input id="status-date-input" type="date" name="date" placeholder="dd/mm/yyyy" value="{{ selected_date|date:'Y-m-d' }}" onchange="this.form.submit()">
+  <noscript><button type="submit">Xem</button></noscript>
+  <a href="?date={{ previous_date|date:'Y-m-d' }}" aria-label="Ngày trước">‹</a>
+  <a href="?date={{ today|date:'Y-m-d' }}">Hôm nay</a>
+  <a href="?date={{ next_date|date:'Y-m-d' }}" aria-label="Ngày tiếp theo">›</a>
+</form>
+<section class="status-panel">
+  <h1>Danh sách lịch hẹn cần theo dõi</h1>
+  <div class="status-table-wrap"><table class="status-table">
+    <thead><tr><th>Mã lịch</th><th>Khách hàng &amp; SĐT</th><th>Thời gian phục vụ</th><th>Dịch vụ</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+    <tbody>{% for a in page_obj %}
+      <tr>
+        <td class="status-code">{{ a.ma_lich_hen }}</td>
+        <td><strong>{{ a.ten_lien_he }}</strong><small>{{ a.so_dien_thoai_lien_he }}</small></td>
+        <td><strong class="status-code">{{ a.ngay_gio_bat_dau|date:"H:i" }} – {{ a.ngay_gio_ket_thuc|date:"H:i" }}</strong><small>{{ a.ngay_gio_bat_dau|date:"d/m/Y" }}</small></td>
+        <td>{% for item in a.chi_tiet.all %}<div>{{ item.ten_dich_vu_dat }}</div>{% empty %}Chưa có dịch vụ{% endfor %}</td>
+        <td><span class="status-badge {% if a.trang_thai == 'Chờ xác nhận' %}pending{% elif a.trang_thai == 'Đã xác nhận' %}confirmed{% elif a.trang_thai == 'Hủy' %}canceled{% endif %}">{{ a.trang_thai }}</span></td>
+        <td><a class="status-detail" href="{% url 'owner:status_edit' a.pk %}?date={{ selected_date|date:'Y-m-d' }}&amp;page={{ page_obj.number }}">Xem chi tiết</a></td>
+      </tr>
+    {% empty %}<tr><td colspan="6" class="status-empty">Không có lịch hẹn trong ngày này</td></tr>{% endfor %}</tbody>
+  </table></div>
+</section>
+<nav class="status-pagination" aria-label="Phân trang lịch hẹn">
+{% if page_obj.has_previous %}<a href="?date={{ selected_date|date:'Y-m-d' }}&amp;page=1" aria-label="Trang đầu">«</a><a href="?date={{ selected_date|date:'Y-m-d' }}&amp;page={{ page_obj.previous_page_number }}" aria-label="Trang trước">‹</a>{% else %}<span>«</span><span>‹</span>{% endif %}
+{% for number in page_obj.paginator.page_range %}{% if number == page_obj.number %}<span aria-current="page">{{ number }}</span>{% else %}<a href="?date={{ selected_date|date:'Y-m-d' }}&amp;page={{ number }}">{{ number }}</a>{% endif %}{% endfor %}
+{% if page_obj.has_next %}<a href="?date={{ selected_date|date:'Y-m-d' }}&amp;page={{ page_obj.next_page_number }}" aria-label="Trang sau">›</a><a href="?date={{ selected_date|date:'Y-m-d' }}&amp;page={{ page_obj.paginator.num_pages }}" aria-label="Trang cuối">»</a>{% else %}<span>›</span><span>»</span>{% endif %}
+</nav>
+{% endblock %}

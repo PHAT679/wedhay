@@ -1,0 +1,30 @@
+{% extends 'owner/overview.html' %}
+{% load payment_format %}
+{% block title %}Chi tiết lịch hẹn - Emmay Beauty{% endblock %}
+{% block body_class %} owner-overview owner-timeline-detail{% if request.GET.from_status == '1' %} status-detail-from-list{% endif %}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/owner-overview.css"><link rel="stylesheet" href="/static/css/owner-timeline-detail.css?v=timeline-compact-20261111">{% endblock %}
+{% block page_title %}Theo dõi lịch hẹn{% endblock %}
+{% block content %}
+<a class="timeline-detail-back" href="{% if request.GET.from_status == '1' %}{% url 'owner:status_list' %}{% else %}{% url 'owner:timeline' %}{% endif %}?date={{ selected_date|date:'Y-m-d' }}&amp;page={{ timeline_page }}">‹ &nbsp;{% if request.GET.from_status == '1' %}Quay lại danh sách lịch hẹn{% else %}Timeline{% endif %}</a>
+<article class="timeline-detail">
+  <header class="timeline-detail-header">
+    <h1>Chi tiết lịch hẹn</h1>
+    <div><span class="timeline-detail-status {% if appointment.trang_thai == 'Đã xác nhận' %}confirmed{% elif appointment.trang_thai == 'Chờ xác nhận' %}pending{% elif appointment.trang_thai == 'Hủy' %}canceled{% endif %}">{% if appointment.trang_thai == 'Hủy' %}Đã hủy{% else %}{{ appointment.trang_thai }}{% endif %}</span><span class="timeline-detail-id">Mã lịch hẹn: {{ appointment.ma_lich_hen }}</span></div>
+  </header>
+  <h2>THÔNG TIN KHÁCH HÀNG</h2>
+  <div class="timeline-detail-customer"><span class="timeline-detail-avatar">{{ appointment.ten_lien_he|slice:":1"|upper }}</span><div><strong>{{ appointment.ten_lien_he }}</strong><small>☎ &nbsp;{{ appointment.so_dien_thoai_lien_he }}</small></div></div>
+  <h2>THÔNG TIN THỜI GIAN</h2>
+  <div class="timeline-detail-grid">
+    <div><span class="timeline-detail-icon">▦</span><span><small>Ngày hẹn</small><strong>{{ appointment.ngay_gio_bat_dau|date:"l, d/m/Y" }}</strong></span></div>
+    <div><span class="timeline-detail-icon">◷</span><span><small>Giờ bắt đầu</small><strong>{{ appointment.ngay_gio_bat_dau|date:"H:i" }} – {{ appointment.ngay_gio_ket_thuc|date:"H:i" }}</strong></span></div>
+    <div><span class="timeline-detail-icon">◷</span><span><small>Thời lượng dự kiến</small><strong>{{ appointment.tong_thoi_luong }} phút</strong></span></div>
+  </div>
+  <h2>DỊCH VỤ VÀ NHÂN VIÊN THỰC HIỆN</h2>
+  <div class="timeline-detail-grid">
+    <div><span class="timeline-detail-symbol">✧</span><span><strong>{% for item in appointment.chi_tiet.all %}{{ item.ten_dich_vu_dat }}{% if not forloop.last %}, {% endif %}{% empty %}Chưa có dịch vụ{% endfor %}</strong><small>Dịch vụ đã chọn</small></span></div>
+    <div><span class="timeline-detail-symbol">♙</span><span><strong>{% if appointment.trang_thai == 'Chờ xác nhận' %}Chưa phân công{% else %}{% for assignment in appointment.timeline_assignments %}{{ assignment.nhan_vien.ten_nhan_vien }}{% empty %}Chưa phân công{% endfor %}{% endif %}</strong><small>Nhân viên thực hiện</small></span></div>
+    <div><span><strong class="timeline-detail-price">{% if request.GET.from_status == '1' %}{{ appointment.tong_tien|floatformat:"0g" }}{% else %}{{ appointment.tong_tien|payment_vnd }}{% endif %} đ</strong><small>Tổng tiền</small></span></div>
+  </div>
+  <div class="timeline-detail-actions"><a href="{% if request.GET.from_status == '1' %}{% url 'owner:status_list' %}{% else %}{% url 'owner:timeline' %}{% endif %}?date={{ selected_date|date:'Y-m-d' }}&amp;page={{ timeline_page }}">‹ &nbsp; Quay lại</a></div>
+</article>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Quản Lý Lịch Hẹn - Emmay Beauty{% endblock %}
+{% block page_title %}Danh Sách & Theo Dõi Lịch Hẹn (UC 3){% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 24px; padding: 20px;">
+  <!-- Filter & Search Form -->
+  <form method="get" style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;">
+    <div style="flex: 1; min-width: 220px;">
+      <label class="form-label" style="font-size: 12.5px;">Tìm kiếm theo tên / SĐT / Mã lịch:</label>
+      <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Nhập từ khóa tìm kiếm...">
+    </div>
+
+    <div style="width: 180px;">
+      <label class="form-label" style="font-size: 12.5px;">Lọc theo trạng thái:</label>
+      <select name="status" class="form-select">
+        <option value="">-- Tất cả trạng thái --</option>
+        <option value="Chờ xác nhận" {% if status_filter == 'Chờ xác nhận' %}selected{% endif %}>Chờ xác nhận</option>
+        <option value="Đã xác nhận" {% if status_filter == 'Đã xác nhận' %}selected{% endif %}>Đã xác nhận</option>
+        <option value="Hoàn thành" {% if status_filter == 'Hoàn thành' %}selected{% endif %}>Hoàn thành</option>
+        <option value="Hủy" {% if status_filter == 'Hủy' %}selected{% endif %}>Hủy</option>
+        <option value="Không đến" {% if status_filter == 'Không đến' %}selected{% endif %}>Không đến</option>
+      </select>
+    </div>
+
+    <div style="width: 160px;">
+      <label class="form-label" style="font-size: 12.5px;">Lọc theo ngày:</label>
+      <input type="date" name="date" value="{{ date_filter }}" class="form-control">
+    </div>
+
+    <div>
+      <button type="submit" class="btn btn-primary">Tìm Kiếm</button>
+      <a href="{% url 'owner:appointments_list' %}" class="btn btn-secondary">Đặt Lại</a>
+    </div>
+  </form>
+</div>
+
+<!-- Appointments Table -->
+<div class="card" style="padding: 0; overflow: hidden;">
+  <div class="table-responsive" style="border: none;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mã Lịch</th>
+          <th>Khách Hàng</th>
+          <th>Thời Gian Hẹn</th>
+          <th>Dịch Vụ Đặt</th>
+          <th>Tổng Tiền</th>
+          <th>KTV Phụ Trách</th>
+          <th>Trạng Thái</th>
+          <th style="text-align: right;">Chi Tiết</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+          <tr>
+            <td><strong style="color: var(--dark-rose);">{{ a.ma_lich_hen }}</strong></td>
+            <td>
+              <div style="font-weight: 600;">{{ a.ten_lien_he }}</div>
+              <div style="font-size: 12px; color: var(--text-muted);">{{ a.so_dien_thoai_lien_he }}</div>
+            </td>
+            <td>
+              <div style="font-weight: 600;">{{ a.ngay_gio_bat_dau|date:"H:i" }}</div>
+              <div style="font-size: 11.5px; color: var(--text-muted);">{{ a.ngay_gio_bat_dau|date:"d/m/Y" }}</div>
+            </td>
+            <td>
+              <div style="font-size: 13px;">
+                {% for ct in a.chi_tiet.all %}
+                  <div>• {{ ct.ten_dich_vu_dat }} ({{ ct.thoi_luong_dat }}p)</div>
+                {% endfor %}
+              </div>
+            </td>
+            <td>
+              <strong style="font-family: var(--font-body); font-weight: 700; color: var(--deep-rose);">
+                {{ a.tong_tien|floatformat:0 }} đ
+              </strong>
+            </td>
+            <td>
+              {% if a.phan_cong_hien_tai %}
+                <span style="font-weight: 500;">{{ a.phan_cong_hien_tai.nhan_vien.ten_nhan_vien }}</span>
+                <div style="font-size: 11px; color: var(--text-muted);">({{ a.phan_cong_hien_tai.trang_thai_tiep_nhan }})</div>
+              {% else %}
+                <span style="color: #E65100; font-size: 12px; font-style: italic;">Chưa phân công</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if a.trang_thai == 'Chờ xác nhận' %}
+                <span class="badge badge-pending">Chờ xác nhận</span>
+              {% elif a.trang_thai == 'Đã xác nhận' %}
+                <span class="badge badge-confirmed">Đã xác nhận</span>
+              {% elif a.trang_thai == 'Hoàn thành' %}
+                <span class="badge badge-completed">Hoàn thành</span>
+              {% elif a.trang_thai == 'Hủy' %}
+                <span class="badge badge-canceled">Hủy</span>
+              {% else %}
+                <span class="badge badge-noshow">{{ a.trang_thai }}</span>
+              {% endif %}
+            </td>
+            <td style="text-align: right;">
+              <a href="{% url 'owner:appointment_detail' a.pk %}" class="btn btn-secondary btn-sm">Xem & Xử Lý</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">
+              Không tìm thấy lịch hẹn nào phù hợp.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

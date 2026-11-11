@@ -1,0 +1,32 @@
+{% extends 'owner/overview.html' %}
+{% block title %}Xác nhận thay đổi phân công - Emmay Beauty{% endblock %}
+{% block body_class %} owner-overview owner-assignment-confirm{% endblock %}
+{% block page_title %}Quản lý phân công{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/owner-overview.css">
+<style>
+.owner-assignment-confirm .page-container { max-width:none; padding:20px 32px; }
+.change-confirm-card { box-sizing:border-box; max-width:1200px; margin:0 auto; padding:20px 24px; border:1px solid #efd2dc; border-radius:24px; background:#fff; }
+.change-confirm-card h1 { margin:0; color:#ad687d; font-size:28px; font-weight:400; }.change-confirm-intro { color:#8c8087; margin:6px 0 12px; padding-bottom:12px; border-bottom:1px solid #efdce4; }
+.change-confirm-appointment { padding:10px 16px; border:1px solid #efdce4; border-radius:16px; background:#fff7f9; color:#604d56; }
+.change-confirm-appointment small { color:#ae6b80; font-weight:700; }.change-confirm-appointment h2 { margin:10px 0; font-size:23px; color:#604d56; }.change-confirm-appointment p { margin:6px 0; }.change-confirm-time { color:#a87989; }
+.change-confirm-people { display:grid; grid-template-columns:230px 1fr; gap:8px 20px; margin:14px 16px; color:#604d56; }.change-confirm-old { color:#a65d76; }.change-confirm-new { color:#28876d; }
+.change-confirm-available { padding:10px 16px; border-radius:12px; background:#e6f5ed; color:#28876d; font-weight:700; }.change-confirm-question { margin:14px 16px; color:#604d56; }
+.change-confirm-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:16px; margin-top:16px; }.change-confirm-actions a,.change-confirm-actions button { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 32px; border:1px solid #d98ba3; border-radius:10px; font:inherit; font-weight:700; text-decoration:none; cursor:pointer; }.change-confirm-actions a { min-width:160px; background:#fff; color:#ad687d; }.change-confirm-actions button { background:#d98ba3; color:#fff; }
+@media(max-width:700px) { .owner-assignment-confirm .page-container { padding:24px 16px; }.change-confirm-card { padding:28px 20px; }.change-confirm-card h1 { font-size:25px; }.change-confirm-people { grid-template-columns:1fr; gap:8px; margin:28px 0; }.change-confirm-actions { gap:12px; margin-top:35px; }.change-confirm-actions a,.change-confirm-actions button { flex:1; min-width:140px; } }
+</style>
+{% endblock %}
+{% block content %}
+<section class="change-confirm-card">
+  <h1>Xác nhận thay đổi phân công</h1><p class="change-confirm-intro">Kiểm tra thông tin trước khi lưu thay đổi</p>
+  <div class="change-confirm-appointment">
+    <small>LỊCH HẸN #{{ appointment.ma_lich_hen }}</small><h2>{{ appointment.ten_lien_he }}</h2>
+    <p>{% for detail in appointment.chi_tiet.all %}{{ detail.ten_dich_vu_dat }} ({{ detail.thoi_luong_dat }} phút){% if not forloop.last %} + {% endif %}{% empty %}Chưa có dịch vụ{% endfor %}</p>
+    <p class="change-confirm-time">Ngày {{ appointment.ngay_gio_bat_dau|date:'d/m/Y' }} · {{ appointment.ngay_gio_bat_dau|date:'H:i' }}–{{ appointment.ngay_gio_ket_thuc|date:'H:i' }} · Tổng thời lượng: {{ appointment.tong_thoi_luong }} phút</p>
+  </div>
+  <div class="change-confirm-people"><span>Nhân viên hiện tại:</span><strong class="change-confirm-old">{{ current_assignment.nhan_vien.ten_nhan_vien }}</strong><span>Nhân viên mới:</span><strong class="change-confirm-new">{{ selected_staff.ten_nhan_vien }}</strong></div>
+  <p class="change-confirm-available">✓ Không trùng lịch trong khoảng {{ appointment.ngay_gio_bat_dau|date:'H:i' }}–{{ appointment.ngay_gio_ket_thuc|date:'H:i' }}</p>
+  <p class="change-confirm-question">Bạn có chắc chắn muốn thay đổi nhân viên được phân công?</p>
+  <form method="post" action="{% url 'owner:assign_staff' appointment.pk %}" class="change-confirm-actions">{% csrf_token %}<input type="hidden" name="nhan_vien_id" value="{{ selected_staff.pk }}"><input type="hidden" name="from_change_confirmation" value="1"><a href="{% url 'owner:assign_staff' appointment.pk %}?change=1">Hủy bỏ</a><button type="submit">Xác nhận thay đổi</button></form>
+</section>
+{% endblock %}

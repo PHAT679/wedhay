@@ -1,0 +1,27 @@
+{% extends 'base_dashboard.html' %}
+{% block title %}Tổng quan - Chủ tiệm Emmay Beauty{% endblock %}
+{% block body_class %} owner-overview{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="/static/css/owner-overview.css?v=overview-spacing-2-20261111">{% endblock %}
+{% block page_title %}Tổng quan{% endblock %}
+{% block sidebar_content %}
+{% include 'owner/_sidebar.html' %}
+{% endblock %}
+{% block header_account %}
+{% with owner_name=user.get_full_name|default:user.username %}
+<details class="overview-account"><summary><span class="overview-avatar">{{ owner_name|slice:":1"|upper }}</span><span><strong>{{ owner_name }}</strong><small>Chủ tiệm</small></span></summary><div class="overview-account-menu"><a href="{% url 'accounts:logout' %}">Đăng xuất</a></div></details>
+{% endwith %}
+{% endblock %}
+{% block content %}
+{% with owner_name=user.get_full_name|default:user.username %}
+<section class="overview-panel">
+  <h1>Chào mừng trở lại, {{ owner_name }} !</h1>
+  <p class="overview-subtitle">Tổng quan</p>
+  <div class="overview-stats">
+    <div class="overview-stat overview-today"><span>Lịch hẹn hôm nay</span><strong>{{ total_today }}</strong></div>
+    <div class="overview-stat overview-confirmed"><span>Đã xác nhận</span><strong>{{ confirmed_today }}</strong></div>
+    <div class="overview-stat overview-pending"><span>Chờ xác nhận</span><strong>{{ pending_today }}</strong></div>
+  </div>
+  <p class="overview-wish">Chúc bạn một ngày làm việc vui vẻ!</p>
+</section>
+{% endwith %}
+{% endblock %}

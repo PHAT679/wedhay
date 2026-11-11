@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tổng Quan - Chủ Tiệm Emmay Beauty</title>
+
+  <!-- Google Fonts: Playfair Display & Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  
+</head>
+<body class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <a href="/">
+        <img src="/static/images/logo.svg" alt="Emmay Beauty" class="sidebar-logo">
+      </a>
+      <div style="font-size: 11px; color: var(--primary-rose); font-weight: 600; margin-top: 4px; letter-spacing: 1px;">
+        PORTAL CHỦ TIỆM
+      </div>
+    </div>
+
+    <ul class="sidebar-nav">
+      
+        <li class="nav-item active">
+          <a href="/owner/">
+            <span class="nav-icon">📊</span>
+            <span>Tổng Quan</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/owner/timeline/">
+            <span class="nav-icon">📅</span>
+            <span>Theo Dõi Timeline (30p)</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/owner/appointments/">
+            <span class="nav-icon">📋</span>
+            <span>Quản Lý Lịch Hẹn</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/owner/assignments/">
+            <span class="nav-icon">👩‍🎨</span>
+            <span>Phân Công Kỹ Thuật Viên</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/owner/services/">
+            <span class="nav-icon">💅</span>
+            <span>Quản Lý Dịch Vụ Nail</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a href="/owner/customers/">
+            <span class="nav-icon">👥</span>
+            <span>Quản Lý Khách Hàng</span>
+          </a>
+        </li>
+      
+
+      <li class="nav-item" style="margin-top: 20px; border-top: 1px solid var(--border-pink); padding-top: 10px;">
+        <a href="/">
+          <span class="nav-icon">🌐</span>
+          <span>Xem Trang Khách Hàng</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="/notifications/">
+          <span class="nav-icon">🔔</span>
+          <span>Thông Báo Hệ Thống</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar">
+          C
+        </div>
+        <div class="user-info">
+          <span class="user-name">Chủ Tiệm</span>
+          <span class="user-role">Chủ Tiệm</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="main-wrapper">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-title">
+        <h2>Tổng Quan Tiệm Nail Emmay Beauty</h2>
+      </div>
+
+      <div class="header-actions">
+        <!-- Notification Bell Dropdown -->
+        <div class="notification-bell-container">
+          <button type="button" class="bell-btn" id="notif-bell-btn" title="Thông báo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            
+              <span class="bell-counter">10</span>
+            
+          </button>
+
+          <div class="notification-dropdown" id="notif-dropdown">
+            <div class="notif-header">
+              <span>Thông Báo Mới (10)</span>
+              <a href="/notifications/mark-all-read/" style="font-size: 11px;">Đánh dấu đã đọc</a>
+            </div>
+            <ul class="notif-list">
+              
+                <li class="notif-item unread">
+                  <a href="/notifications/TB015/read/" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="notif-title">Khách hàng đã hủy lịch hẹn LH009</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Khách Nguyễn Hồng Nhung đã hủy lịch hẹn lúc 06:30 08/11/2026.</div>
+                    <div class="notif-time">1 hour, 56 minutes trước</div>
+                  </a>
+                </li>
+              
+                <li class="notif-item unread">
+                  <a href="/notifications/TB014/read/" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="notif-title">Lịch hẹn mới cần xác nhận</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Khách Nguyễn Hồng Nhung (0905123456) vừa đặt lịch LH009 lúc 13:30 08/11/20…</div>
+                    <div class="notif-time">1 hour, 56 minutes trước</div>
+                  </a>
+                </li>
+              
+                <li class="notif-item ">
+                  <a href="/notifications/TB011/read/" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="notif-title">Lịch hẹn mới cần xác nhận</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Khách Nguyễn Hồng Nhung (0905123456) vừa đặt lịch LH008 lúc 16:00 07/11/20…</div>
+                    <div class="notif-time">3 hours, 4 minutes trước</div>
+                  </a>
+                </li>
+              
+                <li class="notif-item unread">
+                  <a href="/notifications/TB010/read/" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="notif-title">Lịch hẹn mới cần xác nhận</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Khách Nguyễn Hồng Nhung (0905123456) vừa đặt lịch LH007 lúc 14:30 31/10/20…</div>
+                    <div class="notif-time">3 hours, 54 minutes trước</div>
+                  </a>
+                </li>
+              
+                <li class="notif-item unread">
+                  <a href="/notifications/TB009/read/" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="notif-title">Khách hàng đã hủy lịch hẹn LH006</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Khách Nguyễn Hồng Nhung đã hủy lịch hẹn lúc 04:00 02/11/2026.</div>
+                    <div class="notif-time">3 hours, 54 minutes trước</div>
+                  </a>
+                </li>
+              
+                <li class="notif-item unread">
+                  <a href="/notifications/TB008/read/" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="notif-title">Lịch hẹn mới cần xác nhận</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Khách Nguyễn Hồng Nhung (0905123456) vừa đặt lịch LH006 lúc 11:00 02/11/20…</div>
+                    <div class="notif-time">3 hours, 54 minutes trước</div>
+                  </a>
+                </li>
+              
+                <li class="notif-item unread">
+                  <a href="/notifications/TB007/read/" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="notif-title">Khách hàng đã hủy lịch hẹn LH005</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Khách Nguyễn Hồng Nhung đã hủy lịch hẹn lúc 02:00 01/11/2026.</div>
+                    <div class="notif-time">3 hours, 55 minutes trước</div>
+                  </a>
+                </li>
+              
+                <li class="notif-item unread">
+                  <a href="/notifications/TB006/read/" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="notif-title">Lịch hẹn mới cần xác nhận</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">Khách Nguyễn Hồng Nhung (0905123456) vừa đặt lịch LH005 lúc 09:00 01/11/20…</div>
+                    <div class="notif-time">3 hours, 55 minutes trước</div>
+                  </a>
+                </li>
+              
+            </ul>
+            <div style="padding: 10px; text-align: center; border-top: 1px solid var(--border-pink);">
+              <a href="/notifications/" style="font-size: 12px; font-weight: 600;">Xem tất cả</a>
+            </div>
+          </div>
+        </div>
+
+        <a href="/accounts/logout/" class="btn btn-outline btn-sm">
+          Đăng Xuất
+        </a>
+      </div>
+    </header>
+
+    <!-- Flash Messages -->
+    
+
+    <!-- Page Body -->
+    <div class="page-container">
+      
+<!-- Stat Widgets -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon" style="background: #FFF0F3; color: var(--btn-rose);">📅</div>
+    <div class="stat-info">
+      <span class="stat-val">2</span>
+      <span class="stat-label">Lịch Hẹn Hôm Nay</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon" style="background: var(--status-pending-bg); color: var(--status-pending);">⏳</div>
+    <div class="stat-info">
+      <span class="stat-val">1</span>
+      <span class="stat-label">Chờ Xác Nhận</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon" style="background: var(--status-confirmed-bg); color: var(--status-confirmed);">✅</div>
+    <div class="stat-info">
+      <span class="stat-val">0</span>
+      <span class="stat-label">Đã Xác Nhận</span>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon" style="background: var(--status-completed-bg); color: var(--status-completed);">🏆</div>
+    <div class="stat-info">
+      <span class="stat-val">1</span>
+      <span class="stat-label">Đã Hoàn Thành</span>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Shortcuts -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 28px;">
+  <!-- Recent appointments table -->
+  <div class="card" style="padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h3 class="card-title" style="margin-bottom: 0;">Lịch Hẹn Mới Nhất</h3>
+      <a href="/owner/appointments/" class="btn btn-outline btn-sm">Xem Tất Cả &rarr;</a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mã Lịch</th>
+            <th>Khách Hàng</th>
+            <th>Thời Gian Hẹn</th>
+            <th>Trạng Thái</th>
+            <th>Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>LH009</strong></td>
+              <td>
+                <div style="font-weight: 600;">Nguyễn Hồng Nhung</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">0905123456</div>
+              </td>
+              <td>13:30 - 08/11/2026</td>
+              <td>
+                
+                  <span class="badge badge-canceled">Hủy</span>
+                
+              </td>
+              <td>
+                <a href="/owner/appointments/LH009/" class="btn btn-secondary btn-sm">Chi Tiết</a>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><strong>LH008</strong></td>
+              <td>
+                <div style="font-weight: 600;">Nguyễn Hồng Nhung</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">0905123456</div>
+              </td>
+              <td>16:00 - 07/11/2026</td>
+              <td>
+                
+                  <span class="badge badge-confirmed">Đã xác nhận</span>
+                
+              </td>
+              <td>
+                <a href="/owner/appointments/LH008/" class="btn btn-secondary btn-sm">Chi Tiết</a>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><strong>LH007</strong></td>
+              <td>
+                <div style="font-weight: 600;">Nguyễn Hồng Nhung</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">0905123456</div>
+              </td>
+              <td>14:30 - 31/10/2026</td>
+              <td>
+                
+                  <span class="badge badge-pending">Chờ xác nhận</span>
+                
+              </td>
+              <td>
+                <a href="/owner/appointments/LH007/" class="btn btn-secondary btn-sm">Chi Tiết</a>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><strong>LH006</strong></td>
+              <td>
+                <div style="font-weight: 600;">Nguyễn Hồng Nhung</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">0905123456</div>
+              </td>
+              <td>11:00 - 02/11/2026</td>
+              <td>
+                
+                  <span class="badge badge-canceled">Hủy</span>
+                
+              </td>
+              <td>
+                <a href="/owner/appointments/LH006/" class="btn btn-secondary btn-sm">Chi Tiết</a>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><strong>LH005</strong></td>
+              <td>
+                <div style="font-weight: 600;">Nguyễn Hồng Nhung</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">0905123456</div>
+              </td>
+              <td>09:00 - 01/11/2026</td>
+              <td>
+                
+                  <span class="badge badge-canceled">Hủy</span>
+                
+              </td>
+              <td>
+                <a href="/owner/appointments/LH005/" class="btn btn-secondary btn-sm">Chi Tiết</a>
+              </td>
+            </tr>
+          
+            <tr>
+              <td><strong>LH004</strong></td>
+              <td>
+                <div style="font-weight: 600;">Nguyễn Hồng Nhung</div>
+                <div style="font-size: 11.5px; color: var(--text-muted);">0905123456</div>
+              </td>
+              <td>11:00 - 01/11/2026</td>
+              <td>
+                
+                  <span class="badge badge-canceled">Hủy</span>
+                
+              </td>
+              <td>
+                <a href="/owner/appointments/LH004/" class="btn btn-secondary btn-sm">Chi Tiết</a>
+              </td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick Action Panel -->
+  <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <h3 class="card-title">Hành Động Nhanh</h3>
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
+        Các thao tác điều hành thường xuyên của chủ tiệm.
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <a href="/owner/timeline/" class="btn btn-primary" style="justify-content: flex-start;">
+          <span>📅 Xem Timeline 30 Phút Hôm Nay</span>
+        </a>
+        <a href="/owner/assignments/" class="btn btn-secondary" style="justify-content: flex-start;">
+          <span>👩‍🎨 Phân Công Kỹ Thuật Viên</span>
+        </a>
+        <a href="/owner/services/create/" class="btn btn-outline" style="justify-content: flex-start;">
+          <span>💅 Thêm Mới Dịch Vụ Nail</span>
+        </a>
+        <a href="/owner/customers/create/" class="btn btn-outline" style="justify-content: flex-start;">
+          <span>👥 Thêm Khách Hàng Mới</span>
+        </a>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-pink); font-size: 12.5px; color: var(--text-muted);">
+      📍 Tiệm nail Emmay Beauty • 356/87 Hoàng Diệu, Đà Nẵng
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+  
+</body>
+</html>

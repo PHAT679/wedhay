@@ -1,0 +1,15 @@
+<div class="booking-success-content">
+  <div class="booking-success-icon" aria-hidden="true">✓</div>
+  <h2 id="booking-success-title">Đặt Lịch Hẹn Thành Công!</h2>
+  <p class="booking-success-intro">Cảm ơn bạn đã lựa chọn tiệm nail Emmay Beauty. Hệ thống đã ghi nhận lịch hẹn và chuyển đến nhân viên phụ trách.</p>
+  <hr>
+  <div class="booking-success-ticket">
+    <div class="booking-success-row"><span>Thời gian đến hẹn:</span><strong>{{ appointment.ngay_gio_bat_dau|date:"H:i - l, d/m/Y" }}</strong></div>
+    <div class="booking-success-row"><span>Người đặt:</span><strong>{{ appointment.ten_lien_he }} ({{ appointment.so_dien_thoai_lien_he }})</strong></div>
+    <p class="booking-success-label">Dịch vụ đã chọn:</p>
+    <ul>{% for ct in appointment.chi_tiet.all %}<li>· {{ ct.ten_dich_vu_dat }} ({{ ct.thoi_luong_dat }}p)<br><span data-success-price="{{ ct.don_gia_dat|floatformat:0 }}">{{ ct.don_gia_dat|floatformat:0 }} đ</span></li>{% endfor %}</ul>
+    <div class="booking-success-row booking-success-total"><strong>Tổng tiền thanh toán tại tiệm</strong><b data-success-price="{{ appointment.tong_tien|floatformat:0 }}">{{ appointment.tong_tien|floatformat:0 }} đ</b></div>
+  </div>
+  <div class="booking-success-salon">Địa chỉ tiệm: {{ salon_address }}<br>Hotline hỗ trợ: {{ salon_hotline }}</div>
+  <div class="booking-success-actions"><a href="{% url 'customer:my_appointments' %}" autofocus>Quản lý lịch hẹn</a><a href="{% url 'home' %}">Về Trang Chủ</a></div>
+</div>

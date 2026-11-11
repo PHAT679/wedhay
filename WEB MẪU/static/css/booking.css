@@ -1,0 +1,76 @@
+/* Scoped exclusively to the customer booking form. */
+.emmay-booking {max-width:1200px;margin:24px auto;padding:13px 22px;background:#fff;border:1px solid #f4c3d2;border-radius:22px;color:#25364b;width:calc(100% - 64px)}
+body:has(.emmay-booking) {background:#fff9fc}
+/* Remove only the booking page footer, including its layout space. */
+body:has(.emmay-booking) > .site-footer {display:none}
+.emmay-booking h1 {text-align:center;color:#b32f56;font-size:27px;font-weight:700;line-height:1.3;margin:0 0 13px}
+.emmay-booking #booking-form {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:stretch}
+.emmay-booking .booking-services {grid-column:1;grid-row:1;padding-right:22px;border-right:1px solid #f6d7e1;min-width:0;margin-bottom:0}
+.emmay-booking .booking-details {grid-column:2;grid-row:1}
+.emmay-booking h2 {display:flex;align-items:center;gap:12px;font-size:16px;color:#d53e6a;margin:0 0 12px;font-weight:700}
+.emmay-booking h2>span {display:inline-flex;align-items:center;justify-content:center;flex:0 0 28px;height:28px;border-radius:50%;background:#d98ba3;color:white;font-size:17px}
+.emmay-booking .booking-service-heading {display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:center;gap:16px;margin-bottom:10px}
+.emmay-booking .booking-service-heading h2 {margin:0;font-size:16px;line-height:1.4}
+.emmay-booking #service-search {width:100%;max-width:100%;padding:5px 12px 5px 42px;font-size:12px;height:32px}
+.emmay-booking .service-select-item {display:flex;margin:0;padding:5.5px 12px;min-height:55px;border:1px solid #f3bfce;border-radius:12px;align-items:center;cursor:pointer;gap:10px}
+.emmay-booking #booking-service-list {display:flex;flex-direction:column;gap:8px;margin-bottom:0}
+.emmay-booking .service-select-item.selected {background:#fff2f7;border-color:#e8789c}
+.emmay-booking .service-select-checkbox {width:19px;height:19px;margin:0;flex-shrink:0;accent-color:#d98ba3}
+.emmay-booking .booking-service-copy {min-width:0;flex:1}
+.emmay-booking .booking-service-top {display:flex;justify-content:space-between;gap:14px;align-items:baseline;font-size:12px}
+.emmay-booking .booking-service-top strong {overflow-wrap:anywhere}
+.emmay-booking .booking-service-top b {white-space:nowrap;color:#d53e6a;font-size:14px}
+.emmay-booking small {display:block;color:#9797ab;font-size:11px;margin-top:4px}
+.emmay-booking .booking-details {min-width:0}
+.emmay-booking .booking-totals {min-height:0;display:grid;grid-template-columns:auto 1fr;gap:12px;padding:12px;border:1px solid #f4c3d2;border-radius:16px;background:#fff2f7;color:#9994a5;font-size:12px;margin-bottom:7px}
+.emmay-booking .booking-totals>div:first-child {padding-right:16px;border-right:1px solid #f4d3df;align-self:start;min-height:36px}
+.emmay-booking .booking-totals>div:last-child {display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center}
+.emmay-booking .booking-totals strong {color:#d53e6a;font-size:17px;text-align:right}
+.emmay-booking #selected-count {margin-left:10px}
+.emmay-booking #total-price-label {font-size:22px;color:#b32f56}
+.emmay-booking label:not(.service-select-item):not(.slot-label) {display:block;font-size:12px;margin-bottom:5px}
+.emmay-booking input:not([type=checkbox]):not([type=radio]),.emmay-booking textarea {width:100%;min-width:0;border:1px solid #f3bfce;border-radius:10px;background:#fff;padding:9px 12px;font:inherit;font-size:13px;color:#25364b}
+.emmay-booking #contact_name,.emmay-booking #contact_phone,.emmay-booking #booking_date {height:38px;line-height:18px}
+.emmay-booking input::placeholder,.emmay-booking textarea::placeholder {color:#9998ad}
+.emmay-booking textarea {display:block;resize:vertical;height:48px;min-height:48px;font-size:13px}
+.emmay-booking .booking-contact-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.emmay-booking .booking-schedule {border-top:1px solid #f4d3df;margin-top:9.5px;padding-top:10px}
+.emmay-booking .booking-schedule-grid {display:grid;grid-template-columns:minmax(150px,.9fr) minmax(0,2fr);gap:20px}
+.emmay-booking .time-slots-container {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:0}
+.emmay-booking .slot-label {height:30px;padding:4px 3px;border:1px solid #ea83a3;border-radius:9px;font-size:12px;line-height:20px;margin:0;color:#25364b;font-weight:700}
+.emmay-booking .slot-radio-btn.disabled .slot-label {background:#f4f5f7;color:#afb3bf;border-color:#d7dae2}
+.emmay-booking .slot-radio-btn input:checked+.slot-label {background:#f7dce6;color:#b32f56;border-color:#dc4472;box-shadow:none}
+.emmay-booking .slot-radio-btn input:focus-visible+.slot-label {outline:2px solid #b32f56;outline-offset:2px}
+.emmay-booking .booking-submit {border-top:1px solid #f4d3df;margin-top:9.5px;padding-top:10px;text-align:right}
+.emmay-booking .booking-submit button {min-width:200px;height:38px;padding:10px 24px;background:#d98ba3;border-color:#d98ba3;border-radius:10px;font-size:13px}
+.emmay-booking [hidden] {display:none!important}
+.emmay-booking .booking-error::before {content:"!";display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-right:8px;border-radius:50%;background:#f02f59;color:white}
+.emmay-booking .booking-error {font-size:12px;color:#f02f59;font-weight:600;margin:6px 0 0}
+.emmay-booking input[aria-invalid=true] {border-color:#f02f59!important}
+.emmay-booking #booking-pagination {display:flex;justify-content:center;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.emmay-booking #booking-pagination button {border:1px solid #e99cb4;background:white;color:#c8456c;border-radius:50%;width:26px;height:26px;cursor:pointer}
+.emmay-booking #booking-pagination .page-dot {width:11px;height:11px;padding:0;border:0;background:#f4dce5}
+.emmay-booking #booking-pagination [aria-current=page] {background:#b32f56}
+.emmay-booking button:disabled {cursor:not-allowed;opacity:.5}
+.emmay-booking .booking-date-wrap {position:relative}
+.emmay-booking .booking-date-control {display:flex;position:relative}
+.emmay-booking #booking_date {padding:10px 32px 10px 16px;font-size:13px}
+.emmay-booking .booking-search {position:relative;min-width:0}
+.emmay-booking .booking-search svg {position:absolute;left:16px;top:8px;width:16px;height:16px;color:#c7446d;pointer-events:none}
+.emmay-booking #calendar-toggle svg {width:22px;height:22px;display:block}
+.emmay-booking #booking_date::-webkit-calendar-picker-indicator {display:none}
+.emmay-booking #calendar-toggle {position:absolute;right:8px;top:8px;background:white;border:0;padding:0;font-size:22px;color:#32516a;cursor:pointer}
+.emmay-booking #booking-calendar {position:absolute;top:calc(24.2px + 38px + 5px);bottom:auto;left:0;margin-bottom:12px;width:250px;max-width:calc(100vw - 70px);z-index:20;background:white;border:1px solid #f3d5e0;border-radius:12px;padding:8px;box-shadow:0 8px 22px #a7476115}
+.emmay-booking .calendar-head {display:flex;justify-content:space-between;align-items:center;color:#b32f56;font-weight:600;font-size:12px;margin-bottom:10px}
+.emmay-booking .calendar-days {display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:11px}
+.emmay-booking #booking-calendar button {border:0;background:white;border-radius:7px;height:28px;padding:4px;cursor:pointer;color:#454154}
+.emmay-booking #booking-calendar [aria-pressed=true] {background:#f4dce5}
+@media(min-width:761px) and (max-width:1250px){.emmay-booking .booking-service-heading{grid-template-columns:1fr;gap:12px}.emmay-booking .booking-schedule-grid{grid-template-columns:1fr}.emmay-booking .booking-date-wrap{max-width:240px}}
+@media(max-width:1100px){.emmay-booking{width:calc(100% - 32px);padding:28px 20px}.emmay-booking h1{margin-bottom:32px}.emmay-booking .booking-totals{grid-template-columns:1fr}.emmay-booking .booking-totals>div:first-child{border:0}}
+@media(max-width:760px){.emmay-booking #booking-form{grid-template-columns:1fr}.emmay-booking .booking-services,.emmay-booking .booking-details{grid-column:1;grid-row:auto}.emmay-booking .booking-service-heading{grid-template-columns:1fr}.emmay-booking .booking-services{border:0;padding:0;margin-bottom:0}.emmay-booking .booking-contact-grid,.emmay-booking .booking-schedule-grid{grid-template-columns:1fr}.emmay-booking .booking-service-top{flex-wrap:wrap;gap:4px}.emmay-booking h2{font-size:16px}.emmay-booking h1{font-size:26px}.emmay-booking .booking-submit button{width:100%}}
+
+.emmay-booking .booking-slot-hint {grid-column:1 / -1;color:#9797ab;font-size:12px}
+.emmay-booking .booking-date-wrap > small {margin-top:5px;font-size:11px}
+@media (min-width: 1101px) {
+  .emmay-booking { padding-top: 58px; padding-bottom: 23px; }
+}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Quản Trị Hệ Thống - Emmay Beauty{% endblock %}</title>
+
+  <!-- Google Fonts: Playfair Display & Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css?v=shared-bell-24-20261111">
+  {% if is_owner %}<link rel="stylesheet" href="/static/css/owner-sidebar.css">{% endif %}
+  {% if is_owner %}<link rel="stylesheet" href="/static/css/owner-rejection-bell.css?v=badge-shake-20261110"><link rel="stylesheet" href="/static/css/owner-header-account.css?v=logout-menu-20261110">{% endif %}
+  {% block extra_css %}{% endblock %}
+  {% if is_owner or is_employee %}<link rel="stylesheet" href="/static/css/role-pagination.css?v=20261111">{% endif %}
+</head>
+<body class="app-layout{% if is_owner %} owner-header{% endif %}{% if is_employee %} employee-layout{% endif %}{% block body_class %}{% endblock %}">
+  <!-- Sidebar -->
+  <aside class="sidebar{% if is_owner %} owner-sidebar{% endif %}">
+    {% block sidebar_content %}
+    {% if is_owner %}
+    {% include 'owner/_sidebar.html' %}
+    {% else %}
+    <div class="sidebar-brand">
+      {% if not is_employee %}<a href="{% url 'home' %}">{% endif %}
+        <img src="/static/images/logo.svg" alt="Emmay Beauty" class="sidebar-logo">
+      {% if not is_employee %}</a>{% endif %}
+      {% if not is_employee %}<div style="font-size: 11px; color: var(--primary-rose); font-weight: 600; margin-top: 4px; letter-spacing: 1px;">
+        {% if is_owner %}PORTAL CHỦ TIỆM{% elif is_employee %}PORTAL KỸ THUẬT VIÊN{% else %}PORTAL THÀNH VIÊN{% endif %}
+      </div>{% endif %}
+    </div>
+
+    <ul class="sidebar-nav">
+      {% if is_employee %}
+        <li class="nav-item active">
+          <a href="{% url 'employee:dashboard' %}">
+            <span class="nav-icon" aria-hidden="true">▦</span>
+            <span>Lịch hẹn được phân công</span>
+          </a>
+        </li>
+      {% endif %}
+
+      {% if not is_employee %}<li class="nav-item" style="margin-top: 20px; border-top: 1px solid var(--border-pink); padding-top: 10px;">
+        <a href="{% url 'home' %}">
+          <span class="nav-icon">🌐</span>
+          <span>Xem Trang Khách Hàng</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{% url 'notifications:list' %}">
+          <span class="nav-icon">🔔</span>
+          <span>Thông Báo Hệ Thống</span>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="user-avatar">
+          {{ user.username|slice:":1"|upper }}
+        </div>
+        <div class="user-info">
+          <span class="user-name">{{ user.first_name|default:user.username }}</span>
+          <span class="user-role">{{ current_role }}</span>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% endblock %}
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="main-wrapper">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-title">
+        <h2>{% block page_title %}Bảng Điều Khiển{% endblock %}</h2>
+      </div>
+
+      <div class="header-actions">
+        <!-- Notification Bell Dropdown -->
+        <div class="notification-bell-container">
+          <button type="button" class="bell-btn" id="notif-bell-btn" title="Thông báo">
+            {% if is_owner or is_employee %}
+            {% include 'includes/notification_bell_icon.html' %}
+            {% else %}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            {% endif %}
+            {% if unread_notifications_count > 0 %}
+              <span class="bell-counter">{{ unread_notifications_count }}</span>
+            {% endif %}
+          </button>
+
+          <div class="notification-dropdown" id="notif-dropdown">
+            <div class="notif-header">
+              <span>Thông Báo Mới ({{ unread_notifications_count }})</span>
+              <a href="{% url 'notifications:mark_all_read' %}" style="font-size: 11px;">Đánh dấu đã đọc</a>
+            </div>
+            <ul class="notif-list">
+              {% for n in recent_notifications %}
+                <li class="notif-item {% if not n.da_doc %}unread{% endif %}">
+                  <a href="{% url 'notifications:mark_read' n.pk %}" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="notif-title">{{ n.tieu_de }}</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 2px;">{{ n.noi_dung|truncatechars:75 }}</div>
+                    <div class="notif-time">{{ n.thoi_diem_tao|timesince }} trước</div>
+                  </a>
+                </li>
+              {% empty %}
+                <li style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">Chưa có thông báo nào.</li>
+              {% endfor %}
+            </ul>
+{% if not is_owner %}
+            <div style="padding: 10px; text-align: center; border-top: 1px solid var(--border-pink);">
+              <a href="{% url 'notifications:list' %}" style="font-size: 12px; font-weight: 600;">Xem tất cả</a>
+            </div>
+{% endif %}
+          </div>
+        </div>
+
+        {% block header_account %}{% if is_owner %}
+        {% with owner_name=user.get_full_name|default:user.username %}
+        <details class="overview-account"><summary><span class="overview-avatar">{{ owner_name|slice:":1"|upper }}</span><span><strong>{{ owner_name }}</strong><small>Chủ tiệm</small></span></summary><div class="overview-account-menu"><a href="{% url 'accounts:logout' %}">Đăng xuất</a></div></details>
+        {% endwith %}
+        {% elif is_employee %}
+        {% with employee_name=current_nhan_vien.ten_nhan_vien|default:user.get_full_name|default:user.username %}
+        <details class="employee-account"><summary><span class="employee-account-avatar">{{ employee_name|slice:":1"|upper }}</span><span><strong>{{ employee_name }}</strong><small>Nhân viên</small></span></summary><div class="employee-account-menu"><a href="{% url 'accounts:logout' %}">Đăng xuất</a></div></details>
+        {% endwith %}
+        {% else %}<a href="{% url 'accounts:logout' %}" class="btn btn-outline btn-sm">
+          Đăng Xuất
+        </a>{% endif %}{% endblock %}
+      </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% if messages %}
+      <div class="alert-container" style="margin-top: 18px;">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            <span>{{ message }}</span>
+            <button type="button" style="background:transparent; border:none; cursor:pointer;" onclick="this.parentElement.remove();">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Page Body -->
+    <div class="page-container">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+
+  <script src="/static/js/main.js"></script>
+  {% if is_owner %}<script src="/static/js/owner-header-account.js" defer></script>{{ unread_rejection_ids|json_script:"owner-unread-rejection-ids" }}<script src="/static/js/owner-rejection-bell.js" data-url="{% url 'notifications:owner_status' %}" defer></script>{% endif %}
+  {% if is_employee %}<script src="/static/js/employee-account-menu.js" defer></script>{% endif %}
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,13 @@
+.owner-header .bell-btn { background:transparent; color:#a94c6b; border:0; }
+.owner-header .overview-account { position:relative; color:#ad4d71; }
+.owner-header .overview-account summary { display:flex; align-items:center; gap:12px; cursor:pointer; list-style:none; }
+.owner-header .overview-account summary::-webkit-details-marker { display:none; }
+.owner-header .overview-account summary > span:last-child { display:flex; flex-direction:column; }
+.owner-header .overview-account strong { font-size:13px; }
+.owner-header .overview-account small { color:#858a9a; font-size:11px; }
+.owner-header .overview-avatar { display:grid; place-items:center; width:38px; height:38px; border-radius:50%; background:#fbe7ee; font-weight:700; }
+.owner-header .overview-account-menu { position:absolute; left:0; right:auto; top:calc(100% + 12px); z-index:110; width:160px; height:50px; padding:0; border:1px solid #efd2dc; border-radius:10px; background:#fff; text-align:center; }
+.owner-header .overview-account-menu::before { content:""; position:absolute; left:19px; top:-7px; width:12px; height:12px; background:#fff; border-top:1px solid #efd2dc; border-left:1px solid #efd2dc; transform:translateX(-50%) rotate(45deg); }
+.owner-header .overview-account-menu a { position:relative; display:flex; align-items:center; justify-content:center; height:100%; padding:0 12px; color:#39343a; font-size:14px; text-decoration:none; }
+
+@media(max-width:460px) { .owner-header .overview-account-menu { left:auto; right:0; transform:none; } .owner-header .overview-account-menu::before { left:auto; right:12px; transform:rotate(45deg); } }

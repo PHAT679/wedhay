@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Dịch Vụ & Bảng Giá - Emmay Beauty Nail Salon{% endblock %}
+
+{% block extra_css %}<link rel="stylesheet" href="/static/css/services-public.css?v=hover-20261111">{% endblock %}
+
+{% block content %}
+<div class="public-services">
+  <!-- Header -->
+  <div class="public-services-intro">
+    <h1>Dịch Vụ Làm đẹp Nghệ Thuật</h1>
+    <p>
+      Giá niêm yết rõ ràng, minh bạch, áp dụng đồng bộ tại tiệm. Quý khách có thể chọn nhiều dịch vụ kết hợp khi đặt lịch trực tuyến.
+    </p>
+  </div>
+
+  <!-- Services Grid -->
+  <div class="services-grid">
+    {% for s in services %}
+      <div class="service-card">
+        <div class="service-card-header">
+          <div class="public-service-heading">
+            <h3 class="service-title">{{ s.ten_dich_vu }}</h3>
+            <span class="service-duration"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 3"/></svg>{{ s.thoi_luong }} phút</span>
+          </div>
+          <p class="service-desc">{{ s.ghi_chu|default:"Dịch vụ chăm sóc móng chất lượng cao với sản phẩm chuẩn Hàn Quốc." }}</p>
+        </div>
+
+        <div class="public-service-bottom">
+          <div class="service-meta">
+            <span class="public-service-price-label">Giá trọn gói:</span>
+            <span class="service-price">{{ s.gia_tien|floatformat:0 }} đ</span>
+          </div>
+          <a href="{% url 'customer:booking' %}?service={{ s.ma_dich_vu }}" class="btn btn-outline public-service-book">
+            Chọn Đặt Lịch
+          </a>
+        </div>
+      </div>
+    {% empty %}
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+        Hiện chưa có dịch vụ nào được kích hoạt.
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav class="public-services-pagination" aria-label="Phân trang dịch vụ">
+    {% if page_obj.has_previous %}
+      <a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page=1" aria-label="Trang đầu">&laquo;</a>
+      <a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Trang trước">&lsaquo;</a>
+    {% else %}
+      <span aria-disabled="true" aria-label="Trang đầu">&laquo;</span>
+      <span aria-disabled="true" aria-label="Trang trước">&lsaquo;</span>
+    {% endif %}
+    {% for number in page_numbers %}
+      {% if number == page_obj.paginator.ELLIPSIS %}
+        <span class="pagination-ellipsis">{{ number }}</span>
+      {% elif number == page_obj.number %}
+        <span class="pagination-current" aria-current="page" aria-label="Trang {{ number }}">{{ number }}</span>
+      {% else %}
+        <a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ number }}" aria-label="Trang {{ number }}">{{ number }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.next_page_number }}" aria-label="Trang sau">&rsaquo;</a>
+      <a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.paginator.num_pages }}" aria-label="Trang cuối">&raquo;</a>
+    {% else %}
+      <span aria-disabled="true" aria-label="Trang sau">&rsaquo;</span>
+      <span aria-disabled="true" aria-label="Trang cuối">&raquo;</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+</div>
+{% endblock %}

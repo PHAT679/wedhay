@@ -1,0 +1,69 @@
+{% extends 'owner/overview.html' %}
+{% block title %}Quản lý phân công - Emmay Beauty{% endblock %}
+{% block body_class %} owner-overview owner-assignments{% endblock %}
+{% block page_title %}Quản lý phân công{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/owner-overview.css">
+<style>
+.owner-assignments .page-container { max-width:none; padding:28px 32px 24px; }
+.assignment-card { box-sizing:border-box; max-width:1200px; margin:0 auto; padding:20px 24px; background:#fff; border:1px solid #efd2dc; border-radius:24px; }
+.assignment-description { color:#8c8087; font-size:15px; padding-bottom:14px; border-bottom:1px solid #efdce4; }
+.assignment-toolbar { display:flex; align-items:center; gap:12px; margin:14px 0 14px; }
+.assignment-search { display:flex; flex:1; min-width:0; align-items:center; border:1px solid #efd2dc; border-radius:12px; min-height:54px; background:white; }
+.assignment-search button { border:0; background:transparent; padding:0 8px 0 20px; color:#a99da3; cursor:pointer; font-size:18px; }
+.assignment-search input { border:0; outline:0; min-width:0; flex:1; font:inherit; color:#30313b; background:transparent; padding:12px 12px 12px 0; }
+.assignment-search input::placeholder { color:#a99da3; }
+.assignment-tab,.assignment-action { display:inline-flex; align-items:center; justify-content:center; min-height:48px; padding:0 12px; border-radius:9px; background:#d98ba3; color:white; font-weight:700; text-decoration:none; white-space:nowrap; }
+.assignment-tab:hover,.assignment-action:hover { color:white; background:#c97793; }
+.assignment-table-wrap { min-height:350px; }
+.assignment-table { width:100%; border-collapse:separate; border-spacing:0 8px; table-layout:fixed; font-size:14px; color:#51484e; }
+.assignment-table th { padding:12px 14px; background:#f8e5ec; color:#a35d75; text-align:left; overflow-wrap:anywhere; }
+.assignment-table th:first-child { border-radius:12px 0 0 12px; width:14%; }.assignment-table th:nth-child(2) { width:22%; }.assignment-table th:nth-child(3) { width:27%; }.assignment-table th:nth-child(4) { width:20%; }.assignment-table th:last-child { border-radius:0 12px 12px 0; }
+.assignment-table td { padding:12px 14px; border-top:1px solid #efdce4; border-bottom:1px solid #efdce4; overflow-wrap:anywhere; vertical-align:middle; }
+.assignment-table td:first-child { border-left:1px solid #efdce4; border-radius:12px 0 0 12px; }.assignment-table td:last-child { border-right:1px solid #efdce4; border-radius:0 12px 12px 0; }
+.assignment-table tr.assignment-row:hover td { background:#fff6f8; border-color:#efbdcb; }
+.assignment-table tr.assignment-row:hover .assignment-action { background:#ef829f; }
+.assignment-badge { display:inline-block; padding:8px 16px; border-radius:20px; background:#fff0d9; color:#aa6b25; font-size:12px; font-weight:700; text-align:center; }
+.assignment-action { box-sizing:border-box; min-height:42px; width:100px; max-width:100%; padding:0 6px; white-space:nowrap; text-align:center; }
+.assignment-pagination { max-width:1200px; margin:16px auto; padding:0 20px; display:flex; justify-content:flex-end; gap:14px; color:#a49ba1; font-weight:700; }
+.assignment-pagination a { color:#d98ba3; text-decoration:none; }.assignment-pagination [aria-current] { color:#30313b; text-decoration:underline; }
+.assignment-empty { text-align:center; color:#8c8087; }
+.assignment-empty-panel { box-sizing:border-box; min-height:350px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:40px 24px; text-align:center; border:1px solid #efdce4; border-radius:16px; background:#fff8fa; color:#8c8087; }
+.assignment-empty-no-appointments { box-sizing:border-box; min-height:350px; }
+.assignment-empty-panel h2 { margin:0; color:#a96b80; font-size:24px; }
+.assignment-empty-panel p { margin:0; font-size:16px; }
+@media(max-width:1050px) { .assignment-card { padding:24px; }.assignment-toolbar { flex-wrap:wrap; }.assignment-search { flex-basis:100%; }.assignment-table th,.assignment-table td { padding-left:6px; padding-right:6px; } }
+@media(max-width:700px) { .owner-assignments .page-container { padding:24px 16px; }.assignment-card { padding:24px 16px; }.assignment-tab { white-space:normal; text-align:center; flex:1; }.assignment-action { padding:0 2px; font-size:12px; } }
+</style>
+{% endblock %}
+{% block content %}
+<section class="assignment-card">
+  <p class="assignment-description">{% if mode == 'change' %}Danh sách lịch hẹn đã phân công nhân viên{% else %}Danh sách lịch hẹn đang chờ chủ tiệm phân công nhân viên{% endif %}</p>
+  <div class="assignment-toolbar">
+    <form class="assignment-search" method="get" role="search">
+      {% if mode == 'change' %}<input type="hidden" name="mode" value="change">{% endif %}
+      <button type="submit" aria-label="Tìm kiếm">⌕</button><input name="q" type="search" value="{{ query }}" aria-label="Tìm mã lịch hẹn hoặc tên khách hàng" placeholder="Tìm mã lịch hẹn hoặc tên khách hàng...">
+    </form>
+    <a class="assignment-tab" href="{% url 'owner:assignments_list' %}">Lịch cần phân công</a>
+    <a class="assignment-tab" href="{% url 'owner:assignments_list' %}?mode=change">Thay đổi phân công</a>
+  </div>
+  {% if appointments or mode == 'change' and query %}
+  <div class="assignment-table-wrap"><table class="assignment-table">
+    <thead><tr><th>Mã lịch</th><th>Khách hàng</th><th>Thời gian</th><th>Trạng thái</th><th>Thao tác</th></tr></thead>
+    <tbody>{% for a in appointments %}
+      <tr class="assignment-row"><td>{{ a.ma_lich_hen }}</td><td>{{ a.ten_lien_he }}</td><td>{{ a.ngay_gio_bat_dau|date:'d/m · H:i' }}–{{ a.ngay_gio_ket_thuc|date:'H:i' }}</td><td><span class="assignment-badge">{% if mode == 'change' %}Đã phân công{% else %}Chờ phân công{% endif %}</span></td><td><a class="assignment-action" href="{% url 'owner:assign_staff' a.pk %}{% if mode == 'change' %}?change=1{% endif %}">{% if mode == 'change' %}Thay đổi{% else %}Phân công{% endif %}</a></td></tr>
+    {% empty %}<tr><td class="assignment-empty" colspan="5">{% if query %}Không tìm thấy lịch hẹn phù hợp.{% elif mode == 'change' %}Hiện không có lịch hẹn đã phân công.{% else %}Hiện không có lịch hẹn nào cần phân công.{% endif %}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% else %}
+  <div class="assignment-empty-panel{% if not query %} assignment-empty-no-appointments{% endif %}" role="status">
+    {% if query %}<h2>Không tìm thấy lịch hẹn</h2><p>Không tìm thấy lịch hẹn phù hợp.</p>{% else %}<h2>Không có dữ liệu lịch hẹn</h2><p>{% if mode == 'change' %}Hiện không có lịch hẹn đã phân công.{% else %}Hiện không có lịch hẹn cần phân công{% endif %}</p>{% endif %}
+  </div>
+  {% endif %}
+</section>
+<nav class="assignment-pagination" aria-label="Phân trang lịch phân công">
+  {% if page_obj.has_previous %}<a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page=1" aria-label="Trang đầu">«</a><a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Trang trước">‹</a>{% else %}<span aria-disabled="true">«</span><span aria-disabled="true">‹</span>{% endif %}
+  {% for number in page_range %}{% if number == page_obj.paginator.ELLIPSIS %}<span>…</span>{% elif number == page_obj.number %}<span aria-current="page">{{ number }}</span>{% else %}<a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ number }}">{{ number }}</a>{% endif %}{% endfor %}
+  {% if page_obj.has_next %}<a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.next_page_number }}" aria-label="Trang sau">›</a><a href="?{% if pagination_query %}{{ pagination_query }}&amp;{% endif %}page={{ page_obj.paginator.num_pages }}" aria-label="Trang cuối">»</a>{% else %}<span aria-disabled="true">›</span><span aria-disabled="true">»</span>{% endif %}
+</nav>
+{% endblock %}
+

@@ -1,0 +1,36 @@
+body.owner-overview { background:#fff5f8; }
+.owner-overview .sidebar { width:268px; min-width:268px; max-width:268px; background:#fff0f5; }
+.owner-overview .sidebar-brand { height:112px; padding:16px 20px; }
+.owner-overview .sidebar-logo { width:225px; height:auto; }
+.owner-overview .sidebar-nav { padding:24px 12px; gap:12px; }
+.owner-overview .nav-item a { min-height:53px; padding:12px 20px; font-size:15px; }
+.owner-overview .nav-item.active a { background:#fbe7ee; border-left:0; border-radius:0; box-shadow:inset 2px 0 #d98ba3; color:#ad4d71; }
+.overview-icon { display:inline-flex; justify-content:center; width:22px; font-size:22px; line-height:1; }
+.owner-overview .main-wrapper { width:calc(100% - 268px); min-width:0; }
+.owner-overview .top-header { height:84px; padding:0 24px; }
+.owner-overview .header-title h2 { color:#ad4d71; font-size:24px; font-weight:700; }
+.owner-overview .header-actions { gap:36px; }
+.owner-overview .bell-btn { background:transparent; color:#a94c6b; border:0; }
+.overview-account { position:relative; color:#ad4d71; }
+.overview-account summary { display:flex; align-items:center; gap:12px; cursor:pointer; list-style:none; }
+.overview-account summary::-webkit-details-marker { display:none; }
+.overview-account summary > span:last-child { display:flex; flex-direction:column; }
+.overview-account strong { font-size:13px; }
+.overview-account small { color:#858a9a; font-size:11px; }
+.overview-avatar { display:grid; place-items:center; width:38px; height:38px; border-radius:50%; background:#fbe7ee; font-weight:700; }
+.overview-account-menu { position:absolute; right:0; top:calc(100% + 8px); z-index:110; min-width:140px; padding:12px; border:1px solid #efd2dc; border-radius:10px; background:#fff; text-align:center; }
+.owner-overview .page-container { max-width:none; padding:28px 16px; }
+.overview-panel { padding:24px 30px; border:1px solid #efd2dc; border-radius:16px; background:#fff; }
+.overview-panel h1 { color:#ad4d71; font-size:22px; font-weight:700; }
+.overview-subtitle { margin-top:14px; color:#77717a; font-size:15px; }
+.overview-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; margin-top:20px; }
+.overview-stat { min-height:180px; padding:18px 20px; border:1px solid #efdce4; border-radius:15px; }
+.overview-stat span { display:block; color:#7c8291; font-size:14px; }
+.overview-stat strong { display:block; margin-top:18px; font-size:32px; }
+.overview-today { background:#fdf0f5; color:#bf5579; }
+.overview-confirmed { background:#e8f7ed; color:#24905c; }
+.overview-pending { background:#fff1df; color:#b77916; }
+.overview-wish { margin:125px 0 50px; text-align:center; color:#ad4d71; font-size:32px; font-weight:700; }
+@media(max-width:900px) { .overview-stats { gap:12px; } .overview-panel { padding:24px 20px; } }
+@media(max-width:700px) { .owner-overview .sidebar { width:180px; min-width:180px; max-width:180px; } .owner-overview .main-wrapper { width:calc(100% - 180px); } .owner-overview .nav-item a { padding:10px; font-size:12px; } .overview-stats { grid-template-columns:1fr; } .overview-stat { min-height:120px; } .overview-wish { margin:55px 0 30px; font-size:24px; } }
+@media(max-width:460px) { .owner-overview .sidebar { width:70px; min-width:70px; max-width:70px; } .owner-overview .main-wrapper { width:calc(100% - 70px); } .owner-overview .sidebar-brand { height:auto; padding:10px 4px; } .owner-overview .nav-item a span:last-child { display:none; } .overview-account summary > span:last-child { display:none; } .owner-overview .header-actions { gap:12px; } }

@@ -1,0 +1,15 @@
+#cancel-dialog { width:600px; max-width:calc(100vw - 32px); max-height:calc(100dvh - 32px); overflow-y:auto; margin:auto; padding:34px; border:1px solid #f3d5e0; border-radius:18px; background:#fff; color:#343039; box-shadow:0 16px 40px #0002; text-align:center; }
+#cancel-dialog::backdrop { background:rgba(0,0,0,.37); }
+#cancel-dialog .cancel-warning { width:74px; height:74px; margin:0 auto 20px; display:grid; place-items:center; border-radius:50%; background:#fce7ed; border:1px solid #ffb8ca; }
+#cancel-dialog h2 { font-family:inherit; font-size:26px; font-weight:700; color:#bd464e; margin:0 0 16px; }
+#cancel-dialog #cancel-description { font-size:17px; margin:0; }
+#cancel-dialog .cancel-actions { display:flex; gap:18px; margin-top:70px; }
+#cancel-dialog .cancel-actions button { flex:1; min-width:0; padding:14px 10px; border:1px solid #f5c8d8; border-radius:9px; font:600 16px var(--font-body); cursor:pointer; }
+#cancel-keep { background:#fbedf2; color:#c64e74; }
+#cancel-confirm { background:#d98ba3; color:#fff; }
+#cancel-dialog button:disabled { opacity:.65; cursor:wait; }
+#cancel-error { color:#bd464e; font-size:13px; margin-top:16px; }
+.customer-appointments #cancel-success { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; padding:14px 20px; border:1px solid #aedcba; border-radius:12px; background:#e5f4e9; color:#268339; }
+.customer-appointments #cancel-success button { border:0; background:none; color:inherit; font-family:inherit; font-size:20px; font-weight:700; cursor:pointer; }
+@media(max-width:480px) { #cancel-dialog { padding:24px 18px; } #cancel-dialog .cancel-actions { gap:10px; margin-top:36px; } #cancel-dialog .cancel-actions button { font-size:13px; } }
+

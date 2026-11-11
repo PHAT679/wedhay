@@ -1,0 +1,58 @@
+/* Page-only sizing; the native calendar remains controlled by the browser. */
+#reschedule-feedback.no-slots-warning::backdrop { background:rgba(0,0,0,.22); }
+#reschedule-feedback { border-radius:20px; padding:32px; max-width:405px; width:calc(100% - 32px); }
+#reschedule-feedback-icon { width:72px; height:72px; }
+#reschedule-feedback-title { font-size:20px; }
+#reschedule-feedback.no-slots-warning { width:340px; max-width:calc(100% - 32px); padding:24px; border-radius:18px; }
+#reschedule-feedback.no-slots-warning #reschedule-feedback-icon { width:64px; height:64px; }
+#reschedule-feedback.no-slots-warning #reschedule-feedback-title { font-size:18px; }
+#reschedule-feedback.no-slots-warning #reschedule-feedback-close { width:165px; height:44px; }
+body:has(.customer-reschedule) > .site-footer { display: none; }
+.customer-reschedule.booking-container { max-width: 980px; width: calc(100% - 64px); margin: 24px auto; padding: 0; }
+.customer-reschedule .booking-card { padding: 20px 24px; }
+.customer-reschedule .booking-card > div:first-child { margin-bottom: 16px !important; }
+.customer-reschedule .booking-card > div:first-child a,
+.customer-reschedule .booking-card > div:first-child p { font-size: 12px !important; }
+.customer-reschedule h1 { font-size: 25px !important; }
+.customer-reschedule .booking-card > div:nth-child(2) { padding: 12px 16px !important; margin-bottom: 16px !important; font-size: 12px; line-height: 1.45; }
+.customer-reschedule .booking-card > div:nth-child(2) > div { font-size: 12px !important; margin: 0 !important; }
+.customer-reschedule .booking-card > div:nth-child(2) > div + div { margin-top: 5px !important; }
+.customer-reschedule .booking-card > div:nth-child(2) > div:nth-child(2) { font-size: 17px !important; }
+.customer-reschedule form > div:first-of-type { grid-template-columns: 1fr 1fr !important; gap: 20px !important; margin-bottom: 16px !important; }
+.customer-reschedule form > div:first-of-type > div { min-width: 0; }
+.customer-reschedule #booking_date { max-width: 320px; }
+.customer-reschedule form > div:first-of-type > div:last-child { width: 100%; max-width: 400px; }
+.customer-reschedule .form-group { gap: 8px; margin-bottom: 0; }
+.customer-reschedule .form-label { display: block; font-size: 14px; }
+.customer-reschedule .form-control { height: 38px; padding: 6px 12px; font-size: 12px; }
+.customer-reschedule input[type="date"]::-webkit-calendar-picker-indicator { width: 18px; height: 18px; }
+.customer-reschedule .time-slots-container { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+.customer-reschedule .slot-label { display: flex; align-items: center; justify-content: center; height: 32px; padding: 0 8px; font-size: 11px; }
+.customer-reschedule form > div:last-child { gap: 10px !important; padding-top: 16px !important; }
+.customer-reschedule form > div:last-child .btn { height: 38px; padding: 0 12px; font-size: 12px; }
+.customer-reschedule form > div:last-child a { width: 115px; }
+.customer-reschedule form > div:last-child button { width: 205px; }
+@media (max-width: 600px) {
+  .customer-reschedule.booking-container { width: calc(100% - 32px); }
+  .customer-reschedule .booking-card { padding: 20px 16px; }
+  .customer-reschedule form > div:first-of-type { grid-template-columns: 1fr !important; }
+  .customer-reschedule form > div:last-child { flex-wrap: wrap; }
+  .customer-reschedule form > div:last-child .btn { max-width: 100%; }
+}
+/* Only the reschedule date control and its calendar. */
+.customer-reschedule .reschedule-date-wrap { position:relative; width:100%; max-width:320px; }
+.customer-reschedule .reschedule-date-toggle { display:flex; align-items:center; justify-content:space-between; width:100%; height:38px; padding:6px 12px; border:1.5px solid var(--border-pink); border-radius:10px; background:#fff; color:var(--text-main); font:12px var(--font-body); cursor:pointer; }
+.customer-reschedule .reschedule-date-toggle svg { width:18px; height:18px; color:var(--dark-rose); }
+.customer-reschedule .reschedule-date-toggle:focus-visible { outline:2px solid var(--border-focus); outline-offset:2px; }
+.customer-reschedule .reschedule-calendar { position:absolute; top:calc(100% + 5px); left:0; z-index:100; width:300px; max-width:calc(100vw - 32px); padding:12px; border:1px solid #f3d5e0; border-radius:14px; background:#fff; box-shadow:0 4px 14px #0000000a; }
+.customer-reschedule .reschedule-calendar[hidden] { display:none; }
+.customer-reschedule .reschedule-calendar-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; color:#a9446b; }
+.customer-reschedule .reschedule-calendar-head span { flex:1; font-size:14px; font-weight:700; }
+.customer-reschedule .reschedule-calendar button { border:0; background:none; font-family:inherit; cursor:pointer; }
+.customer-reschedule .reschedule-calendar-head button { width:24px; height:28px; color:#a9446b; font-size:22px; }
+.customer-reschedule .reschedule-calendar-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
+.customer-reschedule .reschedule-calendar-days > span { text-align:center; color:#817a86; font-size:11px; font-weight:600; line-height:24px; }
+.customer-reschedule .reschedule-calendar-days button { height:32px; padding:0; border-radius:8px; font-size:12px; color:#343039; }
+.customer-reschedule .reschedule-calendar-days button[aria-pressed="true"] { background:#f4dce6; }
+.customer-reschedule .reschedule-calendar-days button:disabled { color:#c6c2c8; cursor:not-allowed; }
+.customer-reschedule .reschedule-calendar button:focus-visible { outline:2px solid #d98ba3; }

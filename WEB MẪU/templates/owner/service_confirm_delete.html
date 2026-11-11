@@ -1,0 +1,31 @@
+{% extends 'base_dashboard.html' %}
+
+{% block title %}Xóa Dịch Vụ {{ service.ten_dich_vu }} - Emmay Beauty{% endblock %}
+{% block page_title %}Xác Nhận Xóa Dịch Vụ Nail (UC 4.4){% endblock %}
+
+{% block content %}
+<div style="max-width: 540px; margin: 30px auto;">
+  <div class="card" style="padding: 32px; text-align: center;">
+    <div style="width: 56px; height: 56px; border-radius: 50%; background: #FDE8E8; color: #C62828; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 16px; border: 2px solid #FFCDD2;">
+      🗑️
+    </div>
+
+    <h3 style="font-size: 22px; color: #C62828; margin-bottom: 8px;">Xác Nhận Xóa Dịch Vụ?</h3>
+    <p style="color: var(--text-muted); font-size: 13.5px; margin-bottom: 20px;">
+      Bạn có chắc chắn muốn xóa dịch vụ <strong>"{{ service.ten_dich_vu }}"</strong> ({{ service.gia_tien|floatformat:0 }} đ - {{ service.thoi_luong }} phút) không?
+    </p>
+
+    <div style="background: #FFF8E1; border: 1px solid #FFE082; border-radius: var(--radius-sm); padding: 12px; font-size: 12.5px; color: #E65100; text-align: left; margin-bottom: 24px;">
+      💡 <em>Hệ thống áp dụng xóa mềm (Soft Delete). Dịch vụ sẽ không còn xuất hiện trên menu đặt lịch mới, nhưng dữ liệu lịch sử đặt trước đó vẫn được bảo toàn nguyên vẹn.</em>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <a href="{% url 'owner:services_list' %}" class="btn btn-secondary">Hủy Bỏ</a>
+        <button type="submit" class="btn btn-danger">Xác Nhận Xóa</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
